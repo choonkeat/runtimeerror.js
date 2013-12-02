@@ -18,7 +18,8 @@ var make_generic = function(title) {
 }
 
 var suffixed = function(body) {
-  var meta = { runtimeerror: [strftime.strftime('%b %d', new Date()), 0] };
+  var today = strftime.strftime('%b %d', new Date());
+  var meta = { runtimeerror: [today, 0] };
   try {
     var parts = body.split("<br/>\n");
     var str = parts.pop();
@@ -27,9 +28,21 @@ var suffixed = function(body) {
       body = parts.join("<br/>\n");
     }
   } catch(err) {
-    console.error(err);
+    // okay to have no json suffix (e.g. legacy data)
   }
-  meta.runtimeerror[1]++;
+  // prep a list of whitelisted dates
+  var dates = lodash.map([0, 1, 2, 3, 4, 5, 6], function(n) { return strftime.strftime('%b %d', new Date(new Date() - 3600000*24*n)); });
+  // prune array and remove any out dated data (more than 7 days)
+  lodash.each(meta.runtimeerror, function(item, index) {
+    if ((index % 2) == 0) return;
+    if (dates.indexOf(meta.runtimeerror[index-1]) == -1) meta.runtimeerror.splice(index-1, 2);
+  });
+  // if last data set is "today", +1; otherwise append [today,1]
+  if (meta.runtimeerror[meta.runtimeerror.length-2] == today) {
+    meta.runtimeerror[meta.runtimeerror.length-1]++;
+  } else {
+    meta.runtimeerror.push(today, 1);
+  }
   return body + "<br/>\n" + JSON.stringify(meta);
 }
 
@@ -53,6 +66,7 @@ var create_issue = function(repo, title, body, callback) {
 }
 
 module.exports = {
+  suffixed: suffixed,
   handle: function(provider, title, body, callback) {
     try {
       // best effort HTML stripping: body only
