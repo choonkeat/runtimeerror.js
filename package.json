@@ -8,6 +8,7 @@
   "main": "script.js",
   "dependencies": {
     "octonode": "git://github.com/choonkeat/octonode.git",
+    "formidable": "~1.0.14",
     "lodash": "~2.4.0",
     "strftime": "~0.7.0",
     "request": "~2.27.0",
