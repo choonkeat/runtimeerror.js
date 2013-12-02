@@ -39,8 +39,9 @@ var update_issue = function(repo, issue, title, body, callback) {
   repo.edit_issue(issue.number, attrs, function(err, updated) {
     if (err) return callback(err);
     if (issue.state == 'open') return callback();
-    console.log("repo.create_issue_comment");
-    repo.create_issue_comment(issue.number, { body: attrs.body }, callback);
+    attrs = { body: suffixed(body) };
+    console.log("repo.create_issue_comment", attrs);
+    repo.create_issue_comment(issue.number, attrs, callback);
   });
 }
 
@@ -59,7 +60,7 @@ module.exports = {
       parser.parseComplete(body);
       body = htmlparser.DomUtils.getInnerHTML({ children: select(handler.dom, 'body') }) || body;
       // github prefers <h1>, <h2> to be in their own lines, not stuck with a table, e.g. </table><h1>hello</h1><table>...
-      if (body.match(/<h\d>/i)) body.replace(/>(<h\d>)/i, ">\n\\1").replace(/(<\/h\d>)</i, "\\1\n<");
+      if (body.match(/<h\d>/i)) body = body.replace(/>(<h\d>)/gi, ">\n$1").replace(/(<\/h\d>)</gi, "$1\n<");
     } catch(err) {
       // console.error(err);
     }
