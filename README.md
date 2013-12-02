@@ -25,7 +25,7 @@ node cli.js "title of bug" "bug description body"
 
 ### procmail.js
 
-Submit an incident via command line piping email file via stdin. Can be used in exim `mailbox_command = ` config
+Submit an incident via command line piping email file via stdin. Compatible as [Postfix mailbox_command config](http://www.postfix.org/postconf.5.html#mailbox_command)
 
 ```
 node procmail.js < sample.eml
@@ -33,7 +33,7 @@ node procmail.js < sample.eml
 
 ### web.js
 
-HTTP interface to receive email file upload
+HTTP interface to receive email file upload. Compatible with [runtimeerror_notifier gem](http://rubygems.org/gems/runtimeerror_notifier)
 
 ```
 node web.js
