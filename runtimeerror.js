@@ -4,7 +4,8 @@ var htmlparser = require("htmlparser2");
 var select = require('soupselect').select;
 var label = process.env.ISSUE_LABEL || 'bug';
 
-var anonymized = function(title) {
+// replace digits with {N} and 0xFFF hexadecimals with {HEX}
+var make_generic = function(title) {
   var regexps = [
     [/\A(fwd|fw|re)\:\s/i, ''],
     [/0x[0-9a-f]+/i, '{HEX}'],
@@ -35,19 +36,19 @@ var suffixed = function(body) {
 var update_issue = function(repo, issue, title, body, callback) {
   var wontfix = lodash.find(issue.labels, function(label) { return (label.name || "").toLowerCase() == 'wontfix' });
   var attrs = { body: suffixed(issue.body), state: (wontfix ? issue.state : 'open') };
-  console.log('update_issue', { repo: repo.name, wontfix: wontfix, attrs: attrs });
+  // console.log('update_issue', { repo: repo.name, wontfix: wontfix, attrs: attrs });
   repo.edit_issue(issue.number, attrs, function(err, updated) {
     if (err) return callback(err);
     if (issue.state == 'open') return callback();
     attrs = { body: suffixed(body) };
-    console.log("repo.create_issue_comment", attrs);
+    // console.log("repo.create_issue_comment", attrs);
     repo.create_issue_comment(issue.number, attrs, callback);
   });
 }
 
 var create_issue = function(repo, title, body, callback) {
   var attrs = { title: title, body: suffixed(body), labels: label };
-  console.log('create_issue', { repo: repo.name, attrs: attrs });
+  // console.log('create_issue', { repo: repo.name, attrs: attrs });
   repo.create_issue(attrs, callback);
 }
 
@@ -65,7 +66,7 @@ module.exports = {
       // console.error(err);
     }
     if (! (provider && title && body)) return callback("Blank values not accepted");
-    issue_title = anonymized(title);
+    issue_title = make_generic(title);
     provider.find_issue_by_title(issue_title, provider.repo, function(err, found) {
       if (err) return callback(err);
       if (found) {
