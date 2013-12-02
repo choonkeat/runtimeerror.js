@@ -13,11 +13,31 @@
 
 NOTE: we recommend using a `bot` account instead of your own account so that when errors happen and `bot` creates issues, you'll get the github notifications.
 
-## Execute
+## Usage
+
+### cli.js
+
+Submit an incident via command line and arguments
 
 ```
-node script.js "title of bug" "bug description body"
+node cli.js "title of bug" "bug description body"
 ```
 
-## TODO
-1. passing `title` and `body` other than via command line
+### procmail.js
+
+Submit an incident via command line piping email file via stdin. Can be used in exim `mailbox_command = ` config
+
+```
+node procmail.js < sample.eml
+```
+
+### web.js
+
+HTTP interface to receive email file upload
+
+```
+node web.js
+```
+
+---
+Brought to you by [RuntimeError.net](http://runtimeerror.net)
