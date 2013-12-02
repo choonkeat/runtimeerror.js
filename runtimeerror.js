@@ -58,8 +58,10 @@ module.exports = {
       var parser = new htmlparser.Parser(handler);
       parser.parseComplete(body);
       body = htmlparser.DomUtils.getInnerHTML({ children: select(handler.dom, 'body') }) || body;
+      // github prefers <h1>, <h2> to be in their own lines, not stuck with a table, e.g. </table><h1>hello</h1><table>...
+      if (body.match(/<h\d>/i)) body.replace(/>(<h\d>)/i, ">\n\\1").replace(/(<\/h\d>)</i, "\\1\n<");
     } catch(err) {
-      console.error(err);
+      // console.error(err);
     }
     if (! (provider && title && body)) return callback("Blank values not accepted");
     issue_title = anonymized(title);
