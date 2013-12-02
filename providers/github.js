@@ -5,45 +5,6 @@ var page_size = 30;
 var label = process.env.ISSUE_LABEL || 'bug';
 var octonode = require('octonode');
 
-octonode.repo.prototype.create_issue_comment = function(number, comment, cb) {
-  return this.client.post("/repos/" + this.name + "/issues/" + number + '/comments', comment, function(err, s, b) {
-    if (err) {
-      return cb(err);
-    }
-    if (s !== 201) {
-      return cb(new Error("Repo create_issue_comment error"));
-    } else {
-      return cb(null, b);
-    }
-  });
-}
-
-octonode.repo.prototype.create_issue = function(issue, cb) {
-  return this.client.post("/repos/" + this.name + "/issues", issue, function(err, s, b) {
-    if (err) {
-      return cb(err);
-    }
-    if (s !== 201) {
-      return cb(new Error("Repo create_issue error"));
-    } else {
-      return cb(null, b);
-    }
-  });
-}
-
-octonode.repo.prototype.edit_issue = function(number, issue, cb) {
-  return this.client.patch("/repos/" + this.name + "/issues/" + number, issue, function(err, s, b) {
-    if (err) {
-      return cb(err);
-    }
-    if (s !== 200) {
-      return cb(new Error("Repo edit_issue error"));
-    } else {
-      return cb(null, b);
-    }
-  });
-}
-
 var github = octonode.client(process.env.PERSONAL_ACCESS_TOKEN);
 var repo = github.repo(process.env.REPO);
 repo.client.patch = function(path, content, callback) {

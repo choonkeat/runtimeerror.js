@@ -7,7 +7,7 @@
   "readmeFilename": "README.md",
   "main": "script.js",
   "dependencies": {
-    "octonode": "~0.3.8",
+    "octonode": "git://github.com/choonkeat/octonode.git",
     "lodash": "~2.4.0",
     "strftime": "~0.7.0",
     "request": "~2.27.0",
