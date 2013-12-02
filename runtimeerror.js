@@ -1,5 +1,7 @@
 var strftime = require('strftime');
 var lodash = require('lodash');
+var htmlparser = require("htmlparser2");
+var select = require('soupselect').select;
 var label = process.env.ISSUE_LABEL || 'bug';
 
 var anonymized = function(title) {
@@ -50,6 +52,15 @@ var create_issue = function(repo, title, body, callback) {
 
 module.exports = {
   handle: function(provider, title, body, callback) {
+    try {
+      // best effort HTML stripping: body only
+      var handler = new htmlparser.DefaultHandler();
+      var parser = new htmlparser.Parser(handler);
+      parser.parseComplete(body);
+      body = htmlparser.DomUtils.getInnerHTML({ children: select(handler.dom, 'body') }) || body;
+    } catch(err) {
+      console.error(err);
+    }
     if (! (provider && title && body)) return callback("Blank values not accepted");
     issue_title = anonymized(title);
     provider.find_issue_by_title(issue_title, provider.repo, function(err, found) {

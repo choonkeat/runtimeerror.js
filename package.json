@@ -5,10 +5,13 @@
   "repository": "none",
   "readme": "See README.md",
   "readmeFilename": "README.md",
-  "main": "script.js",
+  "main": "web.js",
   "dependencies": {
     "octonode": "git://github.com/choonkeat/octonode.git",
     "mailparser": "~0.3.6",
+    "soupselect": "~0.2.0",
+    "htmlparser2": "~3.3.0",
+    "domutils": "~1.2.0",
     "formidable": "~1.0.14",
     "lodash": "~2.4.0",
     "strftime": "~0.7.0",
@@ -20,7 +23,7 @@
   },
   "scripts": {
     "test": "jasmine-node spec/",
-    "start": "node script.js"
+    "start": "node web.js"
   },
   "author": "Chew Choon Keat <choonkeat@gimmieworld.com>",
   "license": "None",
