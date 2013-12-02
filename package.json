@@ -1,0 +1,29 @@
+{
+  "name": "runtimeerror.js",
+  "version": "0.1.0",
+  "description": "standalone runtimeerror",
+  "repository": "none",
+  "readme": "See README.md",
+  "readmeFilename": "README.md",
+  "main": "script.js",
+  "dependencies": {
+    "octonode": "~0.3.8",
+    "lodash": "~2.4.0",
+    "strftime": "~0.7.0",
+    "request": "~2.27.0",
+    "node-static": "~0.7.2"
+  },
+  "devDependencies": {
+    "jasmine-node": "~1.11.0"
+  },
+  "scripts": {
+    "test": "jasmine-node spec/",
+    "start": "node script.js"
+  },
+  "author": "Chew Choon Keat <choonkeat@gimmieworld.com>",
+  "license": "None",
+  "engines": {
+    "node": "0.10.x",
+    "npm":  "1.3.x"
+  }
+}
