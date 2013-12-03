@@ -3,6 +3,7 @@ var url = require('url');
 var path = require('path');
 var http = require('http');
 var utils = require('util');
+var lodash = require('lodash');
 var querystring = require('querystring');
 var node_static = require('node-static');
 var formidable = require('formidable');
@@ -27,8 +28,9 @@ var static_directory = new node_static.Server(path.join(__dirname, 'public'));
 var server = http.createServer();
 server.addListener('request', function(req, res) {
   var callback = function(err) {
+    if (err) console.error(err);
     res.writeHead((err ? 412 : 200), {'content-type': 'text/plain'});
-    res.write(err || "Okay");
+    res.write(err ? err.toString() : "Okay");
     res.end();
   }
   var mailparser = create_mailparser(res, callback);
@@ -52,6 +54,25 @@ server.addListener('request', function(req, res) {
         uri = querystring.parse(chunks.join("").toString());
         mailparser.write(uri.message);
         mailparser.end();
+      });
+
+    } else if (req.headers && req.headers['content-type'].toString().match(/application\/json/i)) {
+      var chunks = [];
+      req.on('data', chunks.push.bind(chunks));
+      req.on('end', function() {
+        try {
+          var payload = JSON.parse(chunks.join("").toString());
+          if (payload && payload.notifier && (payload.notifier.url || "").match('bugsnag')) {
+            lodash.forEach(payload.events, function(event) {
+              lodash.forEach(event.exceptions, function(ex) {
+                runtimeerror.handle(provider, ex.message, "``` json\n" + JSON.stringify(ex, null, 2) + "\n```\n", callback);
+              });
+            });
+          }
+          callback();
+        } catch (err) {
+          callback(err);
+        }
       });
 
     } else {
