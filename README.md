@@ -46,6 +46,7 @@ This setup uses the `web.js` mechanism.
 
 * [runtimeerror_notifier gem](http://rubygems.org/gems/runtimeerror_notifier)
 * [bugsnag npm package](https://github.com/bugsnag/bugsnag-node)
+* [rollbar](https://rollbar.com)
 
 NOTE: set environment variable `HIDE_UPLOAD_FORM=1` to hide the default email upload form when visiting the web server.
 
