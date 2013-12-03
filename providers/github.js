@@ -28,7 +28,7 @@ repo.client.patch = function(path, content, callback) {
 var find_issue_by_state_and_title = function(state, title, repo, page, callback) {
   console.log("find_issue_by_state_and_title", [state, title, repo.name, page, state]);
   page = page || 1;
-  repo.issues({ page: 1, per_page: page_size, state: state }, function(err, issues) {
+  repo.issues({ page: page, per_page: page_size, state: state }, function(err, issues) {
     if (err) return callback(err);
     var found = lodash.find(issues, function(issue) { return issue.title == title; });
     if (found) {
