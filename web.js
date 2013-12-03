@@ -68,6 +68,24 @@ server.addListener('request', function(req, res) {
                 runtimeerror.handle(provider, ex.message, "``` json\n" + JSON.stringify(ex, null, 2) + "\n```\n", callback);
               });
             });
+          } else if (payload && payload.access_token && payload.data) {
+            lodash.forEach(payload.data, function(item) {
+              if (item.notifier && item.notifier.name.match('rollbar')) {
+                if (item.body && item.body.trace && item.body.trace.exception) {
+                  var title = [item.body.trace.exception.class, item.body.trace.exception.message].join(': ');
+                  var last_frame = null;
+                  var stacktrace = lodash.map(item.body.trace.frames, function(frame) {
+                    last_frame = frame;
+                    return ["at", frame.method, ['(', frame.filename, ':', frame.lineno, ':', frame.colno].join('')].join(' ');
+                  });
+                  var body = '## Stacktrace\n```\n' + stacktrace.reverse().join("\n") + "\n```\n## Details\n```\n" + JSON.stringify(item, null, 2) + "\n```\n";
+                  if (last_frame && last_frame.context && last_frame.context.pre) {
+                    body = ['## Code\n```', last_frame.context.pre.join("\n"), last_frame.code, last_frame.context.post.join("\n"), '```'].join("\n") + "\n" + body;
+                  }
+                  runtimeerror.handle(provider, title, body, callback);
+                }
+              }
+            });
           }
           callback();
         } catch (err) {
