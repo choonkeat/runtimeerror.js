@@ -1,5 +1,15 @@
 # RuntimeError.js
 
+## What it does
+
+1. Receive a `title` and `body` of a bug report (e.g. submitted via email or http; see `mechanisms` below)
+2. Make `title` generic by replacing digits with `{N}` and hexadecimals with `{HEX}`
+3. Find issue with generic title in Github Issues
+4. Create a new issue if generic title is not found (team will be notified via Github)
+5. Update occurrence `count` at the footer of issue description, if issue exists (no notifications)
+6. `Reopen` issue if issue was `closed`, and add a comment (so we have fresh data to debug with; team will be notified via Github)
+7. Ignore issue if issue is labelled as `wontfix` (no notifications)
+
 ## 1. Setup account
 
 The way github works is that the creator/commenter of an issue will not be notified. This is correct logic, but does not suit our purpose.
