@@ -1,43 +1,62 @@
 # RuntimeError.js
 
-## Setup
+## 1. Setup account
 
-1. create a separate `github` account, e.g. `bot`
-2. add `bot` to the repository you want to integrate with.
-3. go into `bot > account > applications > personal access token` and create a token, e.g. `token`
-4. optionally, turn off all `email` and `web` notifications for `bot` account
-5. set environment variable `PERSONAL_ACCESS_TOKEN` = `token`
-6. set environment variable `REPO`, e.g. `rails/rails`
-7. optionally, set environment variable `PROVIDER`, default to `github` (currently only supports `github`)
-8. optionally, set environment variable `ISSUE_LABEL`, default to `bug` (default label in Github.com)
+The way github works is that the creator/commenter of an issue will not be notified. This is correct logic, but does not suit our purpose.
 
-NOTE: we recommend using a `bot` account instead of your own account so that when errors happen and `bot` creates issues, you'll get the github notifications.
+We recommend using a separate `bot` github account instead of your own so that when errors happen, `bot` will create the issues and you'll get the github notifications. 
 
-## Usage
+1. Create a separate `github` account, e.g. `bot`
+2. Add `bot` to the repository you want to integrate with.
+3. Go into [`Github.com > Account > Applications > Personal Access Tokens`](https://github.com/settings/tokens/new) and create a token for `bot` account, e.g. `token`
+4. Optionally, turn off all [`email` and `web` notifications](https://github.com/settings/notifications) for `bot` account
 
-### cli.js
+## 2. Deploy to server
 
-Submit an incident via command line and arguments
+The easiest option is to deploy on Heroku
+
+1. [Create a heroku app](https://dashboard.heroku.com/apps)
+2. `git push` this repository to your heroku app
+3. Set your environment variables (aka `heroku config:add`)
 
 ```
-node cli.js "title of bug" "bug description body"
+PERSONAL_ACCESS_TOKEN=<your token>
+REPO=<your org>/<your repo> # e.g. rails/rails
+PROVIDER=github # (optional, currently only supports github)
+ISSUE_LABEL=bug # (optional)
+```
+
+This setup uses the `web.js` mechanism.
+
+## Mechanisms
+
+### web.js
+
+`HTTP POST` an email file upload. Compatible with [runtimeerror_notifier gem](http://rubygems.org/gems/runtimeerror_notifier)
+
+```
+node web.js
 ```
 
 ### procmail.js
 
-Submit an incident via command line piping email file via stdin. Compatible as [Postfix mailbox_command config](http://www.postfix.org/postconf.5.html#mailbox_command)
+Pipe email file through `stdin`. Compatible as [Postfix mailbox_command config](http://www.postfix.org/postconf.5.html#mailbox_command)
 
 ```
 node procmail.js < sample.eml
 ```
 
-### web.js
+### cli.js
 
-HTTP interface to receive email file upload. Compatible with [runtimeerror_notifier gem](http://rubygems.org/gems/runtimeerror_notifier)
+Command line arguments
 
 ```
-node web.js
+node cli.js "title of bug" "bug description body"
 ```
+
+## LICENSE
+
+GPL v2
 
 ---
 Brought to you by [RuntimeError.net](http://runtimeerror.net)
