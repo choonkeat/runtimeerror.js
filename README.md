@@ -42,7 +42,12 @@ This setup uses the `web.js` mechanism.
 
 ### web.js
 
-`HTTP POST` an email file upload. Compatible with [runtimeerror_notifier gem](http://rubygems.org/gems/runtimeerror_notifier)
+`HTTP POST` an email file upload. Compatible with
+
+* [runtimeerror_notifier gem](http://rubygems.org/gems/runtimeerror_notifier)
+* [bugsnag npm package](https://github.com/bugsnag/bugsnag-node)
+
+NOTE: set environment variable `HIDE_UPLOAD_FORM=1` to hide the default email upload form when visiting the web server.
 
 ```
 node web.js
@@ -50,7 +55,7 @@ node web.js
 
 ### procmail.js
 
-Pipe email file through `stdin`. Compatible as [Postfix mailbox_command config](http://www.postfix.org/postconf.5.html#mailbox_command)
+Pipe email file through `stdin`. Compatible as [Postfix mailbox_command config](http://www.postfix.org/postconf.5.html#mailbox_command) or as `procmail` replacement.
 
 ```
 node procmail.js < sample.eml

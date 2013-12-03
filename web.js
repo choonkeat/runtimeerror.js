@@ -78,6 +78,8 @@ server.addListener('request', function(req, res) {
     } else {
       callback(invalid_eml_message);
     }
+  } else if (process.env.HIDE_UPLOAD_FORM) {
+    callback(" ");
   } else {
     static_directory.serve(req, res);
   }
