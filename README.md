@@ -42,13 +42,13 @@ This setup uses the `web.js` mechanism.
 
 ### web.js
 
-`HTTP POST` an email file upload. Compatible with
+Upload an email as a bug report on Github Issues (email subject + email body). In production environment, we recommend setting environment variable `HIDE_UPLOAD_FORM=1` to hide this form.
 
+The web application is also compatible with these popular error reporting tools
+
+* [bugsnag](https://github.com/develsadvocates/runtimeerror.js/blob/master/bugsnag.md)
+* [rollbar](https://github.com/develsadvocates/runtimeerror.js/blob/master/rollbar.md)
 * [runtimeerror_notifier gem](http://rubygems.org/gems/runtimeerror_notifier)
-* [bugsnag npm package](https://github.com/bugsnag/bugsnag-node)
-* [rollbar](https://rollbar.com)
-
-NOTE: set environment variable `HIDE_UPLOAD_FORM=1` to hide the default email upload form when visiting the web server.
 
 ```
 node web.js

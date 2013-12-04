@@ -30,13 +30,15 @@ server.addListener('request', function(req, res) {
   var callback = function(err) {
     if (err) console.error(err);
     res.writeHead((err ? 412 : 200), {'content-type': 'text/plain'});
-    res.write(err ? err.toString() : "Okay");
+    res.write(err ? err.toString() : JSON.stringify({"result": []}));
     res.end();
   }
   var mailparser = create_mailparser(res, callback);
   var uri = url.parse(req.url, !!'true:query as object');
   if (req.method == 'POST') {
-    if (req.headers && req.headers['content-type'].toString().match(/multipart\/form/i)) {
+    var content_type = (req.headers && req.headers['content-type'] || "");
+    var content_length = +(req.headers && req.headers['content-length'] || 0);
+    if (content_type.match(/multipart\/form/i)) {
       var form = new formidable.IncomingForm();
       form.encoding = 'utf-8';
       form.on('file', function(name, file) {
@@ -47,7 +49,7 @@ server.addListener('request', function(req, res) {
       form.on('end', function() { callback(invalid_eml_message); });
       form.parse(req);
 
-    } else if (req.headers && req.headers['content-type'].toString().match(/www-form-urlencoded/i)) {
+    } else if (content_type.match(/www-form-urlencoded/i)) {
       var chunks = [];
       req.on('data', chunks.push.bind(chunks));
       req.on('end', function() {
@@ -56,7 +58,7 @@ server.addListener('request', function(req, res) {
         mailparser.end();
       });
 
-    } else if (req.headers && req.headers['content-type'].toString().match(/application\/json/i)) {
+    } else if ((content_type.match(/application\/json/i)) || (content_length > 0)) {
       var chunks = [];
       req.on('data', chunks.push.bind(chunks));
       req.on('end', function() {
@@ -69,6 +71,7 @@ server.addListener('request', function(req, res) {
               });
             });
           } else if (payload && payload.access_token && payload.data) {
+            if ((typeof payload.data.length) == 'undefined') payload.data = [payload.data];
             lodash.forEach(payload.data, function(item) {
               if (item.notifier && item.notifier.name.match('rollbar')) {
                 if (item.body && item.body.trace && item.body.trace.exception) {
@@ -76,7 +79,7 @@ server.addListener('request', function(req, res) {
                   var last_frame = null;
                   var stacktrace = lodash.map(item.body.trace.frames, function(frame) {
                     last_frame = frame;
-                    return ["at", frame.method, ['(', frame.filename, ':', frame.lineno, ':', frame.colno].join('')].join(' ');
+                    return ["at", frame.method, ['(', frame.filename, (frame.lineno && ':'), frame.lineno, (frame.colno && ':'), frame.colno, ')'].join('')].join(' ');
                   });
                   var body = '## Stacktrace\n```\n' + stacktrace.reverse().join("\n") + "\n```\n## Details\n```\n" + JSON.stringify(item, null, 2) + "\n```\n";
                   if (last_frame && last_frame.context && last_frame.context.pre) {
@@ -92,9 +95,13 @@ server.addListener('request', function(req, res) {
           callback(err);
         }
       });
-
     } else {
-      callback(invalid_eml_message);
+      var chunks = [];
+      req.on('data', chunks.push.bind(chunks));
+      req.on('end', function() {
+        console.log('unknown body:', chunks.join('').toString());
+        callback(invalid_eml_message);
+      })
     }
   } else if (process.env.HIDE_UPLOAD_FORM) {
     callback(" ");
