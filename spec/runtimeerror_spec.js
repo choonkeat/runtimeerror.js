@@ -52,6 +52,35 @@ describe("runtimeerror", function() {
       expect(JSON.stringify(runtimeerror.extract_repo_secret_provider())).toBe(JSON.stringify({ }));
     });
   });
+  describe("skip_duplicate", function() {
+    var title = "hello";
+    var accountA1 = runtimeerror.find_or_create_account({ repo: 'repoA', secret: 'secretA', provider: 'none' });
+    var accountA2 = runtimeerror.find_or_create_account({ repo: 'repoA', secret: 'secretA', provider: 'none' });
+    var keyA = runtimeerror.duplicates_key(accountA1, title);
+    var accountB  = runtimeerror.find_or_create_account({ repo: 'repoA', secret: 'secretB', provider: 'none' });
+    var keyB = runtimeerror.duplicates_key(accountB, title);
+    beforeEach(function() {
+      lodash.forEach(runtimeerror.duplicates, function(index, key) { delete runtimeerror.duplicates[key]; });
+    });
+    it("should increment counter for same account info and generic title", function() {
+      runtimeerror.skip_duplicate(accountA1, title);
+      expect(runtimeerror.duplicates[keyA]).toBe(1);
+      expect(runtimeerror.duplicates[keyB]).toBe(undefined);
+      runtimeerror.skip_duplicate(accountA2, title);
+      expect(runtimeerror.duplicates[keyA]).toBe(2);
+      expect(runtimeerror.duplicates[keyB]).toBe(undefined);
+      runtimeerror.skip_duplicate(accountB, title);
+      expect(runtimeerror.duplicates[keyA]).toBe(2);
+      expect(runtimeerror.duplicates[keyB]).toBe(1);
+    });
+    it("should return true ONLY when counter <=1", function() {
+      expect(runtimeerror.skip_duplicate(accountA1, title)).toBe(false);
+      expect(runtimeerror.skip_duplicate(accountA1, title)).toBe(true);
+      expect(runtimeerror.skip_duplicate(accountA2, title)).toBe(true);
+      expect(runtimeerror.skip_duplicate(accountB, title)).toBe(false);
+      expect(runtimeerror.skip_duplicate(accountB, title)).toBe(true);
+    });
+  })
   describe("instance", function() {
     var account = runtimeerror.find_or_create_account({ repo: 'repoA', secret: 'secretB', provider: 'none' });
     describe("find_or_create_account(repo, secret, provider)", function() {
