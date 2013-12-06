@@ -1,18 +1,24 @@
 # RuntimeError.js
 
-## What it does
+Why waste your time at *yet-another-middleman-website* to manage your errors. Deploy your own, free runtimeerror.js & upgrade your Github Issues to manage error tracking directly.
 
-1. Receive a `title` and `body` of a bug report (e.g. submitted via email or http; see `mechanisms` below)
-2. Make `title` generic by replacing digits with `{N}` and hexadecimals with `{HEX}`
-3. Find issue with generic title in Github Issues
-4. Create a new issue if generic title is not found (team will be notified via Github)
-5. Update occurrence `count` at the footer of issue description, if issue exists (no notifications)
-6. `Reopen` issue if issue was `closed`, and add a comment (so we have fresh data to debug with; team will be notified via Github)
-7. Ignore issue if issue is labelled as `wontfix` (no notifications)
+Clustered errors, full context & stacktrace in your email notifications, wontfix, direct email replies to `@johnappleseed` works as intended. What's not to like?
 
-## 1. Setup account
+NOTE: integrations to `trello`, `pivotal tracker` or any other things should be added as a [provider](https://github.com/develsadvocates/runtimeerror.js/tree/master/lib/providers)
 
-The way github works is that the creator/commenter of an issue will not be notified. This is correct logic, but does not suit our purpose.
+## How a human manage errors
+
+1. Rewrite as a generic error message, e.g. `Session#create: User id={N} not found`
+2. Create a new issue if the generic title is new (team will be notified via Github)
+3. Update occurrence `count` if issue already exist (no notifications, keep issue fresh)
+4. `Reopen` issue if it was `closed`, and add fresh debug data in comments (notify team of regression)
+5. Ignore if issue was labelled `wontfix` (no notifications)
+
+`runtimeerror.js` does exactly this.
+
+## 1. Setup github account for api purpose
+
+The way github works is that the creator/commenter of an issue will not be notified. This is a correct logic, but does not suit our purpose.
 
 We recommend using a separate `bot` github account instead of your own so that when errors happen, `bot` will create the issues and you'll get the github notifications. 
 
@@ -21,13 +27,13 @@ We recommend using a separate `bot` github account instead of your own so that w
 3. Go into [`Github.com > Account > Applications > Personal Access Tokens`](https://github.com/settings/tokens/new) and create a token for `bot` account, e.g. `token`
 4. Optionally, turn off all [`email` and `web` notifications](https://github.com/settings/notifications) for `bot` account
 
-## 2. Deploy to server
+## 2. Deploy to a server
 
 The easiest option is to deploy on Heroku
 
 1. [Create a heroku app](https://dashboard.heroku.com/apps)
 2. `git push` this repository to your heroku app
-3. Set your environment variables (aka `heroku config:add`)
+3. Optionally, set your environment variables (aka `heroku config:add`)
 
 ```
 SECRET=<your token>
@@ -38,9 +44,12 @@ LABEL=bug # (optional)
 
 This setup uses the `web.js` mechanism.
 
-### Config via email address (instead of `ENV` variables)
+Setting environment variables is optional because you can also use per-request config (see next point).
 
-`runtimeerror.js` can parse an email address to extract `REPO`, `SECRET`, `PROVIDER` as proposed in issue #1
+### Per-Request config via email address
+
+`runtimeerror.js` parses the email address format to extract `REPO`, `SECRET`, `PROVIDER` in the format of `"{repo}" <{token}@{provider}.com>`
+
 
 For example:
 
@@ -48,7 +57,7 @@ For example:
 "rails/rails" <aaabbccddeeff@github.com>
 ```
 
-would configure `runtimeerror.js` to
+would configure the error to be posted to
 
 ```
 REPO=rails/rails
@@ -56,7 +65,7 @@ SECRET=aaabbccddeeff
 PROVIDER=github
 ```
 
-This allows for multiple `repo/secret/provider` to share the same instance of `runtimeerror.js` deployed
+This allows for multiple `repo/secret/provider` accounts to share the same instance of `runtimeerror.js` deployed
 
 ## Mechanisms
 
@@ -64,17 +73,15 @@ This allows for multiple `repo/secret/provider` to share the same instance of `r
 
 Upload an email as a bug report on Github Issues (email subject + email body). In production environment, we recommend setting environment variable `HIDE_UPLOAD_FORM=1` to hide this form.
 
-The web application is also compatible with these popular error reporting tools
-
-* [bugsnag](https://github.com/develsadvocates/runtimeerror.js/blob/master/bugsnag.md)
-* [rollbar](https://github.com/develsadvocates/runtimeerror.js/blob/master/rollbar.md)
-* [runtimeerror_notifier gem](http://rubygems.org/gems/runtimeerror_notifier)
-
-NOTE: email address `to` is used as config, see `Config via email address` section above
-
 ```
 node web.js
 ```
+
+The web application is compatible with these popular error reporting tools
+
+* [bugsnag](https://github.com/develsadvocates/runtimeerror.js/blob/master/bugsnag.md)
+* [rollbar](https://github.com/develsadvocates/runtimeerror.js/blob/master/rollbar.md)
+* [runtimeerror_notifier gem](http://rubygems.org/gems/runtimeerror_notifier) (set the `email to` as described in `config via email address` section above)
 
 ### procmail.js
 
@@ -84,7 +91,7 @@ Pipe email file through `stdin`. Compatible as [Postfix mailbox_command config](
 node procmail.js < sample.eml
 ```
 
-NOTE: email address `to` is used as config, see `Config via email address` section above
+NOTE: `email to` is used as account config, see `config via email address` section above
 
 ### cli.js
 
