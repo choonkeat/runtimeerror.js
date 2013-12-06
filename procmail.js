@@ -1,10 +1,11 @@
-var provider = require('./providers/' + (process.env.PROVIDER || 'github'));
-var runtimeerror = require('./runtimeerror');
+var runtimeerror = require('./lib/runtimeerror');
+var Account = require('./lib/account').Account;
+var account = new Account();
 
 var MailParser = require("mailparser").MailParser,
     mailparser = new MailParser();
 mailparser.on("end", function(mail_object) {
-  runtimeerror.handle(provider, mail_object.subject, mail_object.html || mail_object.text, function() { /* ok */ });
+  runtimeerror.handle(account, mail_object.subject, mail_object.html || mail_object.text, function() { /* ok */ });
 });
 
 process.stdin.setEncoding('utf8');

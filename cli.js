@@ -3,9 +3,10 @@ var script = process.argv.shift();
 var title = process.argv.shift();
 var body = process.argv.shift();
 if (title && body) {
-  var provider = require('./providers/' + (process.env.PROVIDER || 'github'));
-  var runtimeerror = require('./runtimeerror');
-  runtimeerror.handle(provider, title, body, function(err, result) {
+  var runtimeerror = require('./lib/runtimeerror');
+  var Account = require('./lib/account').Account;
+  var account = new Account();
+  runtimeerror.handle(account, title, body, function(err, result) {
     if (err) return console.error("FAIL", err);
     console.log("OKAY", result || '');
   });

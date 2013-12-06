@@ -30,10 +30,10 @@ The easiest option is to deploy on Heroku
 3. Set your environment variables (aka `heroku config:add`)
 
 ```
-PERSONAL_ACCESS_TOKEN=<your token>
+SECRET=<your token>
 REPO=<your org>/<your repo> # e.g. rails/rails
 PROVIDER=github # (optional, currently only supports github)
-ISSUE_LABEL=bug # (optional)
+LABEL=bug # (optional)
 ```
 
 This setup uses the `web.js` mechanism.

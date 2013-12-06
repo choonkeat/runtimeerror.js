@@ -7,10 +7,12 @@ var lodash = require('lodash');
 var querystring = require('querystring');
 var node_static = require('node-static');
 var formidable = require('formidable');
-var provider = require('./providers/' + (process.env.PROVIDER || 'github'));
-var runtimeerror = require('./runtimeerror');
 var MailParser = require("mailparser").MailParser;
 var invalid_eml_message = 'Please upload a valid email file as "message" form field';
+
+var runtimeerror = require('./lib/runtimeerror');
+var Account = require('./lib/account').Account;
+var account = new Account();
 
 var create_mailparser = function(res, callback) {
   var mailparser = new MailParser();
@@ -18,7 +20,7 @@ var create_mailparser = function(res, callback) {
     title = mail_object.subject;
     body = mail_object.html || mail_object.text;
     if (! (title && body)) return callback(invalid_eml_message);
-    runtimeerror.handle(provider, title, body, callback);
+    runtimeerror.handle(account, title, body, callback);
     callback();
   });
   return mailparser;
@@ -67,7 +69,7 @@ server.addListener('request', function(req, res) {
           if (payload && payload.notifier && (payload.notifier.url || "").match('bugsnag')) {
             lodash.forEach(payload.events, function(event) {
               lodash.forEach(event.exceptions, function(ex) {
-                runtimeerror.handle(provider, ex.message, "``` json\n" + JSON.stringify(ex, null, 2) + "\n```\n", callback);
+                runtimeerror.handle(account, ex.message, "``` json\n" + JSON.stringify(ex, null, 2) + "\n```\n", callback);
               });
             });
           } else if (payload && payload.access_token && payload.data) {
@@ -85,7 +87,7 @@ server.addListener('request', function(req, res) {
                   if (last_frame && last_frame.context && last_frame.context.pre) {
                     body = ['## Code\n```', last_frame.context.pre.join("\n"), last_frame.code, last_frame.context.post.join("\n"), '```'].join("\n") + "\n" + body;
                   }
-                  runtimeerror.handle(provider, title, body, callback);
+                  runtimeerror.handle(account, title, body, callback);
                 }
               }
             });
