@@ -7,6 +7,10 @@ var noop = function() { };
 var nothing = null;
 
 describe("runtimeerror", function() {
+  beforeEach(function() {
+    // reset runtimeerror.duplicates counter
+    lodash.forEach(runtimeerror.duplicates, function(index, key) { delete runtimeerror.duplicates[key]; });
+  });
   describe("make_generic_title", function() {
     it("should change digits to {N}", function() {
       expect(runtimeerror.make_generic_title("1,23-456abc7890.12 345")).toBe("{N},{N}-{N}abc{N} {N}");
@@ -59,9 +63,6 @@ describe("runtimeerror", function() {
     var keyA = runtimeerror.duplicates_key(accountA1, title);
     var accountB  = runtimeerror.find_or_create_account({ repo: 'repoA', secret: 'secretB', provider: 'none' });
     var keyB = runtimeerror.duplicates_key(accountB, title);
-    beforeEach(function() {
-      lodash.forEach(runtimeerror.duplicates, function(index, key) { delete runtimeerror.duplicates[key]; });
-    });
     it("should increment counter for same account info and generic title", function() {
       runtimeerror.skip_duplicate(accountA1, title);
       expect(runtimeerror.duplicates[keyA]).toBe(1);
@@ -107,22 +108,70 @@ describe("runtimeerror", function() {
       it("should call account.update_body_suffix", function() {
         spyOn(runtimeerror, 'update_body_suffix').andCallFake(function(body) { });
         runtimeerror.handle(account, "titleA", "bodyB", noop);
-        expect(runtimeerror.update_body_suffix).toHaveBeenCalledWith("bodyB");
+        expect(runtimeerror.update_body_suffix).toHaveBeenCalledWith("bodyB", 1);
+      });
+      describe("multiple times", function() {
+        it("should call account.find_issue_by_title ONCE", function() {
+          var invoked_find_issue_by_title = 0;
+          spyOn(account, 'find_issue_by_title').andCallFake(function(title, callback) { invoked_find_issue_by_title++; });
+          runtimeerror.handle(account, "titleA", "bodyB", noop);
+          runtimeerror.handle(account, "titleA", "bodyB", noop);
+          runtimeerror.handle(account, "titleA", "bodyB", noop);
+          runtimeerror.handle(account, "titleA", "bodyB", noop);
+          expect(account.find_issue_by_title).toHaveBeenCalledWith("titleA", jasmine.any(Function));
+          expect(invoked_find_issue_by_title).toBe(1);
+        });
       });
       describe("find_issue_by_title yield nothing", function() {
+        var called_find_issue_by_title;
         beforeEach(function() {
-          spyOn(account, 'find_issue_by_title').andCallFake(function(title, callback) { callback(); });
+          called_find_issue_by_title = false;
+          spyOn(account, 'find_issue_by_title').andCallFake(function(title, callback) {
+            process.nextTick(function() {
+              called_find_issue_by_title = true;
+              callback();
+            });
+          });
         });
         it("should call account.create_issue", function() {
           spyOn(account, 'create_issue').andCallFake(function(attrs, callback) { })
-          runtimeerror.handle(account, "titleA", "bodyB", noop);
-          expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "bodyB<br/>\n{\"runtimeerror\":[\"" + today + "\",1]}" }, noop);
+          runs(function() {
+            runtimeerror.handle(account, "titleA", "bodyB", noop);
+          })
+          waitsFor(function() {
+            if (called_find_issue_by_title) {
+              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "bodyB<br/>\n{\"runtimeerror\":[\"" + today + "\",1]}" }, noop);
+            }
+            return called_find_issue_by_title;
+          });
         });
         it("should create_issue with HTML wrapper removed from body", function() {
           spyOn(account, 'create_issue').andCallFake(function(attrs, callback) { })
-          runtimeerror.handle(account, "titleA", "<HTML>\n<head>\n</head>\n<body>bodyB</body>\n</HTML>", noop);
-          expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "<body>bodyB</body><br/>\n{\"runtimeerror\":[\"" + today + "\",1]}" }, noop);
-        })
+          runs(function() {
+            runtimeerror.handle(account, "titleA", "<HTML>\n<head>\n</head>\n<body>bodyB</body>\n</HTML>", noop);
+          });
+          waitsFor(function() {
+            if (called_find_issue_by_title) {
+              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "<body>bodyB</body><br/>\n{\"runtimeerror\":[\"" + today + "\",1]}" }, noop);
+            }
+            return called_find_issue_by_title;
+          });
+        });
+        it("should +{duplicate count} when multiple calls were detected, and reset duplicate counter immediately", function() {
+          spyOn(account, 'create_issue').andCallFake(function(attrs, callback) { })
+          runs(function() {
+            runtimeerror.handle(account, "titleA", "bodyB", noop);
+            runtimeerror.handle(account, "titleA", "bodyB", noop);
+            runtimeerror.handle(account, "titleA", "bodyB", noop);
+          });
+          waitsFor(function() {
+            if (called_find_issue_by_title) {
+              expect(runtimeerror.duplicates[runtimeerror.duplicates_key(account, "titleA")]).toBe(undefined); // should have resetted duplicate counter
+              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "bodyB<br/>\n{\"runtimeerror\":[\"" + today + "\",3]}" }, noop);
+            }
+            return called_find_issue_by_title;
+          });
+        });
       });
 
       var something = { number: "123", title: "hey", body: "you" };
