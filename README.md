@@ -48,7 +48,7 @@ Setting environment variables is optional because you can also use per-request c
 
 ### Per-Request config via email address
 
-`runtimeerror.js` parses the email address format to extract `REPO`, `SECRET`, `PROVIDER` in the format of `"{repo}" <{token}@{provider}.com>`
+`runtimeerror.js` parses the email address format to extract `REPO`, `SECRET`, `PROVIDER` in the format of `"{repo}" <{secret}@{provider}.com>`
 
 
 For example:

@@ -12,4 +12,4 @@ bugsnag.register("apiKey", {
 });
 ```
 
-NOTE: `apiKey` should be formatted as `repo <token@provider.com>`; see `Config via email address` section in README.md
+NOTE: `apiKey` should be formatted as `repo <secret@provider.com>`; see `Config via email address` section in README.md
