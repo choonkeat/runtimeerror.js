@@ -8,6 +8,8 @@
   "main": "web.js",
   "dependencies": {
     "octonode": "git://github.com/choonkeat/octonode.git",
+    "mimelib": "~0.2.14",
+    "encoding": "~0.1.7",
     "mailparser": "~0.3.6",
     "soupselect": "~0.2.0",
     "htmlparser2": "~3.3.0",

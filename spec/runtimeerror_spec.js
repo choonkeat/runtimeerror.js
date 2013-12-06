@@ -44,10 +44,12 @@ describe("runtimeerror", function() {
   describe("extract_repo_secret_provider(email)", function() {
     it("should return object with attributes: repo, secret, provider", function() {
       var result = runtimeerror.extract_repo_secret_provider('"hello/world.js" <abc.def@smtp.random.com>');
-      expect(lodash.keys(result).toString()).toBe(['repo', 'secret', 'provider'].toString());
-      expect(result.repo).toBe('hello/world.js');
-      expect(result.secret).toBe('abc.def');
-      expect(result.provider).toBe('smtp.random');
+      expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world.js', secret: 'abc.def', provider: 'smtp.random' }));
+    });
+    it("should return blank object with invalid email", function() {
+      expect(JSON.stringify(runtimeerror.extract_repo_secret_provider('hello'))).toBe(JSON.stringify({ }));
+      expect(JSON.stringify(runtimeerror.extract_repo_secret_provider(null))).toBe(JSON.stringify({ }));
+      expect(JSON.stringify(runtimeerror.extract_repo_secret_provider())).toBe(JSON.stringify({ }));
     });
   });
   describe("instance", function() {
