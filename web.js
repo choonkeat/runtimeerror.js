@@ -12,7 +12,6 @@ var invalid_eml_message = 'Please upload a valid email file as "message" form fi
 
 var runtimeerror = require('./lib/runtimeerror');
 var Account = require('./lib/account').Account;
-var account = new Account();
 
 var create_mailparser = function(res, callback) {
   var mailparser = new MailParser();
@@ -20,6 +19,7 @@ var create_mailparser = function(res, callback) {
     title = mail_object.subject;
     body = mail_object.html || mail_object.text;
     if (! (title && body)) return callback(invalid_eml_message);
+    var account = new Account(runtimeerror.extract_repo_secret_provider(mail_object.headers.to));
     runtimeerror.handle(account, title, body, callback);
     callback();
   });
@@ -69,6 +69,7 @@ server.addListener('request', function(req, res) {
           if (payload && payload.notifier && (payload.notifier.url || "").match('bugsnag')) {
             lodash.forEach(payload.events, function(event) {
               lodash.forEach(event.exceptions, function(ex) {
+                var account = new Account(runtimeerror.extract_repo_secret_provider(payload.apiKey));
                 runtimeerror.handle(account, ex.message, "``` json\n" + JSON.stringify(ex, null, 2) + "\n```\n", callback);
               });
             });
@@ -87,7 +88,12 @@ server.addListener('request', function(req, res) {
                   if (last_frame && last_frame.context && last_frame.context.pre) {
                     body = ['## Code\n```', last_frame.context.pre.join("\n"), last_frame.code, last_frame.context.post.join("\n"), '```'].join("\n") + "\n" + body;
                   }
+                  var account = new Account(runtimeerror.extract_repo_secret_provider(payload.access_token));
                   runtimeerror.handle(account, title, body, callback);
+                } else if (item.body && item.body.message) {
+                  var body = "\n``` json\n" + JSON.stringify(item.body.message, null, 2) + "\n```\n";
+                  var account = new Account(runtimeerror.extract_repo_secret_provider(payload.access_token));
+                  runtimeerror.handle(account, item.body.message.body || JSON.stringify(item.body.message), body, callback);
                 }
               }
             });

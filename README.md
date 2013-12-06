@@ -38,6 +38,26 @@ LABEL=bug # (optional)
 
 This setup uses the `web.js` mechanism.
 
+### Config via email address (instead of `ENV` variables)
+
+`runtimeerror.js` can parse an email address to extract `REPO`, `SECRET`, `PROVIDER` as proposed in issue #1
+
+For example:
+
+```
+"rails/rails" <aaabbccddeeff@github.com>
+```
+
+would configure `runtimeerror.js` to
+
+```
+REPO=rails/rails
+SECRET=aaabbccddeeff
+PROVIDER=github
+```
+
+This allows for multiple `repo/secret/provider` to share the same instance of `runtimeerror.js` deployed
+
 ## Mechanisms
 
 ### web.js
@@ -50,6 +70,8 @@ The web application is also compatible with these popular error reporting tools
 * [rollbar](https://github.com/develsadvocates/runtimeerror.js/blob/master/rollbar.md)
 * [runtimeerror_notifier gem](http://rubygems.org/gems/runtimeerror_notifier)
 
+NOTE: email address `to` is used as config, see `Config via email address` section above
+
 ```
 node web.js
 ```
@@ -61,6 +83,8 @@ Pipe email file through `stdin`. Compatible as [Postfix mailbox_command config](
 ```
 node procmail.js < sample.eml
 ```
+
+NOTE: email address `to` is used as config, see `Config via email address` section above
 
 ### cli.js
 

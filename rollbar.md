@@ -24,4 +24,4 @@ except:
     rollbar.report_exc_info()
 ```
 
-NOTE: `apiKey` can be any string.
+NOTE: `apiKey` should be formatted as `repo <token@provider.com>`; see `Config via email address` section in README.md
