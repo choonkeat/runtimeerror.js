@@ -1,6 +1,6 @@
 # RuntimeError.js
 
-Why waste your time at *yet-another-middleman-website* to manage your errors. Deploy your own, free runtimeerror.js & upgrade your Github Issues to manage error tracking directly.
+Why waste your time at *yet-another-middleman-website* to manage your errors. **Deploy your own, free runtimeerror.js & upgrade your Github Issues to manage error tracking directly.**
 
 Clustered errors, full context & stacktrace in your email notifications, wontfix, direct email replies to `@johnappleseed` works as intended. What's not to like?
 
@@ -8,7 +8,7 @@ NOTE: integrations to `trello`, `pivotal tracker` or any other things should be 
 
 ## How a human manage errors
 
-1. Rewrite as a generic error message, e.g. `Session#create: User id={N} not found`
+1. Use a generic error message to group errors, e.g. `Session#create: User id={N} not found`
 2. Create a new issue if the generic title is new (team will be notified via Github)
 3. Update occurrence `count` if issue already exist (no notifications, keep issue fresh)
 4. `Reopen` issue if it was `closed`, and add fresh debug data in comments (notify team of regression)
