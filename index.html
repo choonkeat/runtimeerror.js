@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Runtimeerror.js by develsadvocates</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Runtimeerror.js</h1>
+        <p>nodejs app to create github issues, update (and reopen) existing issues. meant for posting production errors to github issues</p>
+
+        <p class="view"><a href="https://github.com/develsadvocates/runtimeerror.js">View the Project on GitHub <small>develsadvocates/runtimeerror.js</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/develsadvocates/runtimeerror.js/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/develsadvocates/runtimeerror.js/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/develsadvocates/runtimeerror.js">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="runtimeerrorjs" class="anchor" href="#runtimeerrorjs"><span class="octicon octicon-link"></span></a>RuntimeError.js</h1>
+
+<p>Why waste your time at <em>yet-another-middleman-website</em> to manage your errors. <strong>Deploy your own, free runtimeerror.js &amp; upgrade your Github Issues to manage error tracking directly.</strong></p>
+
+<p>Clustered errors, full context &amp; stacktrace in your email notifications, wontfix, direct email replies to <code>@johnappleseed</code> works as intended. What's not to like?</p>
+
+<p>NOTE: integrations to <code>trello</code>, <code>pivotal tracker</code> or any other things should be added as a <a href="https://github.com/develsadvocates/runtimeerror.js/tree/master/lib/providers">provider</a></p>
+
+<h2>
+<a name="how-a-human-manage-errors" class="anchor" href="#how-a-human-manage-errors"><span class="octicon octicon-link"></span></a>How a human manage errors</h2>
+
+<ol>
+<li>Use a generic error message to group errors, e.g. <code>Session#create: User id={N} not found</code>
+</li>
+<li>Create a new issue if the generic title is new (team will be notified via Github)</li>
+<li>Update occurrence <code>count</code> if issue already exist (no notifications, keep issue fresh)</li>
+<li>
+<code>Reopen</code> issue if it was <code>closed</code>, and add fresh debug data in comments (notify team of regression)</li>
+<li>Ignore if issue was labelled <code>wontfix</code> (no notifications)</li>
+</ol><p><code>runtimeerror.js</code> does exactly this.</p>
+
+<h2>
+<a name="1-setup-github-account-for-api-purpose" class="anchor" href="#1-setup-github-account-for-api-purpose"><span class="octicon octicon-link"></span></a>1. Setup github account for api purpose</h2>
+
+<p>The way github works is that the creator/commenter of an issue will not be notified. This is a correct logic, but does not suit our purpose.</p>
+
+<p>We recommend using a separate <code>bot</code> github account instead of your own so that when errors happen, <code>bot</code> will create the issues and you'll get the github notifications. </p>
+
+<ol>
+<li>Create a separate <code>github</code> account, e.g. <code>bot</code>
+</li>
+<li>Add <code>bot</code> to the repository you want to integrate with.</li>
+<li>Go into <a href="https://github.com/settings/tokens/new"><code>Github.com &gt; Account &gt; Applications &gt; Personal Access Tokens</code></a> and create a token for <code>bot</code> account, e.g. <code>token</code>
+</li>
+<li>Optionally, turn off all <a href="https://github.com/settings/notifications"><code>email</code> and <code>web</code> notifications</a> for <code>bot</code> account</li>
+</ol><h2>
+<a name="2-deploy-to-a-server" class="anchor" href="#2-deploy-to-a-server"><span class="octicon octicon-link"></span></a>2. Deploy to a server</h2>
+
+<p>The easiest option is to deploy on Heroku</p>
+
+<ol>
+<li><a href="https://dashboard.heroku.com/apps">Create a heroku app</a></li>
+<li>
+<code>git push</code> this repository to your heroku app</li>
+<li>Optionally, set your environment variables (aka <code>heroku config:add</code>)</li>
+</ol><pre><code>SECRET=&lt;your token&gt;
+REPO=&lt;your org&gt;/&lt;your repo&gt; # e.g. rails/rails
+PROVIDER=github # (optional, currently only supports github)
+LABEL=bug # (optional)
+</code></pre>
+
+<p>This setup uses the <code>web.js</code> mechanism.</p>
+
+<p>Setting environment variables is optional because you can also use per-request config (see next point).</p>
+
+<h3>
+<a name="per-request-config-via-email-address" class="anchor" href="#per-request-config-via-email-address"><span class="octicon octicon-link"></span></a>Per-Request config via email address</h3>
+
+<p><code>runtimeerror.js</code> parses the email address format to extract <code>REPO</code>, <code>SECRET</code>, <code>PROVIDER</code> in the format of <code>"{repo}" &lt;{secret}@{provider}.com&gt;</code></p>
+
+<p>For example:</p>
+
+<pre><code>"rails/rails" &lt;aaabbccddeeff@github.com&gt;
+</code></pre>
+
+<p>would configure the error to be posted to</p>
+
+<pre><code>REPO=rails/rails
+SECRET=aaabbccddeeff
+PROVIDER=github
+</code></pre>
+
+<p>This allows for multiple <code>repo/secret/provider</code> accounts to share the same instance of <code>runtimeerror.js</code> deployed</p>
+
+<h2>
+<a name="mechanisms" class="anchor" href="#mechanisms"><span class="octicon octicon-link"></span></a>Mechanisms</h2>
+
+<h3>
+<a name="webjs" class="anchor" href="#webjs"><span class="octicon octicon-link"></span></a>web.js</h3>
+
+<p>Upload an email as a bug report on Github Issues (email subject + email body). In production environment, we recommend setting environment variable <code>HIDE_UPLOAD_FORM=1</code> to hide this form.</p>
+
+<pre><code>node web.js
+</code></pre>
+
+<p>The web application is compatible with these popular error reporting tools</p>
+
+<ul>
+<li><a href="https://github.com/develsadvocates/runtimeerror.js/blob/master/bugsnag.md">bugsnag</a></li>
+<li><a href="https://github.com/develsadvocates/runtimeerror.js/blob/master/rollbar.md">rollbar</a></li>
+<li>
+<a href="http://rubygems.org/gems/runtimeerror_notifier">runtimeerror_notifier gem</a> (set the <code>email to</code> as described in <code>config via email address</code> section above)</li>
+</ul><h3>
+<a name="procmailjs" class="anchor" href="#procmailjs"><span class="octicon octicon-link"></span></a>procmail.js</h3>
+
+<p>Pipe email file through <code>stdin</code>. Compatible as <a href="http://www.postfix.org/postconf.5.html#mailbox_command">Postfix mailbox_command config</a> or as <code>procmail</code> replacement.</p>
+
+<pre><code>node procmail.js &lt; sample.eml
+</code></pre>
+
+<p>NOTE: <code>email to</code> is used as account config, see <code>config via email address</code> section above</p>
+
+<h3>
+<a name="clijs" class="anchor" href="#clijs"><span class="octicon octicon-link"></span></a>cli.js</h3>
+
+<p>Command line arguments</p>
+
+<pre><code>node cli.js "title of bug" "bug description body"
+</code></pre>
+
+<h2>
+<a name="changelog" class="anchor" href="#changelog"><span class="octicon octicon-link"></span></a>Changelog</h2>
+
+<ul>
+<li>
+<code>0.2.0</code> Issue description now shows sparkline image, reflecting error trend of past 7 days</li>
+</ul><h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>LICENSE</h2>
+
+<p>GPL v2</p>
+
+<hr><p>Brought to you by <a href="http://runtimeerror.net">RuntimeError.net</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/develsadvocates">develsadvocates</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
