@@ -30,20 +30,67 @@ describe("runtimeerror", function() {
       expect(runtimeerror.make_generic_title(null)).toBe("");
       expect(runtimeerror.make_generic_title(false)).toBe("");
     })
-  })
+  });
+  describe("sparkline_url", function() {
+    var url_prefix = process.env.SPARKLINE_URL || "http://sparklines-bitworking.appspot.com/spark.cgi?type=impulse&height=40&upper={MAX}&above-color=red&below-color=gray&width=5&limits={MIN},{MAX}&d={RAW}";
+    var dates = lodash.map([6, 5, 4, 3, 2, 1, 0], function(n) { return strftime.strftime('%b %d', new Date(new Date() - 3600000*24*n)); });
+    var date_count_array = [];
+    var values = [];
+    lodash.each(dates, function(date, index) {
+      if (Math.random() > 0.5) return values.push(0);
+      var v = parseInt(Math.random() * 10);
+      values.push(v);
+      date_count_array.push(date);
+      date_count_array.push(v);
+    });
+    it("should generate correct url to image", function() {
+      expect(runtimeerror.sparkline_url(date_count_array)).toBe(
+        url_prefix.replace(/\{([^{}]*)\}/g, function (a, b) {
+          if (b == 'MIN') return "0";
+          if (b == 'MAX') return lodash.max(values);
+          if (b == 'RAW') return values.join(',');
+        })
+      );
+    });
+  });
   describe("update_body_suffix", function() {
     var oneday = 3600000*24;
     it("should append suffix [today, 1]", function() {
-      expect(runtimeerror.update_body_suffix('hello')).toBe('hello<br/>\n{"runtimeerror":["' + today + '",1]}');
+      var meta = { runtimeerror: [today, 1]};
+      var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
+      var json = JSON.stringify(meta);
+      var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
+      expect(runtimeerror.update_body_suffix('hello')).toBe('hello<br/>\n' + img);
     });
     it("should modify suffix if exist", function() {
-      expect(runtimeerror.update_body_suffix('hello<br/>\n{"runtimeerror": ["' + today + '",99]}')).toBe('hello<br/>\n{"runtimeerror":["' + today + '",100]}');
+      var meta = { runtimeerror: [today, 100]};
+      var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
+      var json = JSON.stringify(meta);
+      var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
+      expect(runtimeerror.update_body_suffix('hello<br/>\n{"runtimeerror": ["' + today + '",99]}')).toBe('hello<br/>\n' + img);
     });
     it("should keep old date & counts if exist", function() {
       var yesterday = strftime.strftime('%b %d', new Date(new Date() - oneday));
       var ancient  = strftime.strftime('%b %d', new Date(new Date() - oneday*7));
-      expect(runtimeerror.update_body_suffix('hello<br/>\n{"runtimeerror": ["' + ancient + '",88,"' + yesterday + '",99]}')).toBe('hello<br/>\n{"runtimeerror":["' + yesterday + '",99,"' + today + '",1]}');
+      var meta = { runtimeerror: [yesterday, 99, today, 1]};
+      var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
+      var json = JSON.stringify(meta);
+      var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
+      expect(runtimeerror.update_body_suffix('hello<br/>\n{"runtimeerror": ["' + ancient + '",88,"' + yesterday + '",99]}')).toBe('hello<br/>\n' + img);
     });
+    it("should be able to parse <img/> tag and extract json from title", function() {
+      var yesterday = strftime.strftime('%b %d', new Date(new Date() - oneday));
+      var meta = { runtimeerror: [yesterday, 99, today, 1]};
+      var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
+      var json = JSON.stringify(meta);
+      var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
+
+      var meta2 = { runtimeerror: [yesterday, 99, today, 2]};
+      var img_url2 = runtimeerror.sparkline_url(meta2.runtimeerror);
+      var json2 = JSON.stringify(meta2);
+      var img2 = "<img src='" + img_url2 + "' alt='" + json2 + "' title='" + json2 + "'/>";
+      expect(runtimeerror.update_body_suffix('hello<br/>\n'+img)).toBe('hello<br/>\n'+img2);
+    })
   });
   describe("extract_repo_secret_provider(email)", function() {
     it("should return object with attributes: repo, secret, provider", function() {
@@ -140,7 +187,11 @@ describe("runtimeerror", function() {
           })
           waitsFor(function() {
             if (called_find_issue_by_title) {
-              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "bodyB<br/>\n{\"runtimeerror\":[\"" + today + "\",1]}" }, noop);
+              var meta = { runtimeerror: [today, 1]};
+              var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
+              var json = JSON.stringify(meta);
+              var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
+              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "bodyB<br/>\n"+img }, noop);
             }
             return called_find_issue_by_title;
           });
@@ -152,7 +203,11 @@ describe("runtimeerror", function() {
           });
           waitsFor(function() {
             if (called_find_issue_by_title) {
-              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "<body>bodyB</body><br/>\n{\"runtimeerror\":[\"" + today + "\",1]}" }, noop);
+              var meta = { runtimeerror: [today, 1]};
+              var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
+              var json = JSON.stringify(meta);
+              var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
+              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "<body>bodyB</body><br/>\n"+img }, noop);
             }
             return called_find_issue_by_title;
           });
@@ -167,7 +222,11 @@ describe("runtimeerror", function() {
           waitsFor(function() {
             if (called_find_issue_by_title) {
               expect(runtimeerror.duplicates[runtimeerror.duplicates_key(account, "titleA")]).toBe(undefined); // should have resetted duplicate counter
-              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "bodyB<br/>\n{\"runtimeerror\":[\"" + today + "\",3]}" }, noop);
+              var meta = { runtimeerror: [today, 3]};
+              var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
+              var json = JSON.stringify(meta);
+              var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
+              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "bodyB<br/>\n"+img }, noop);
             }
             return called_find_issue_by_title;
           });
@@ -205,14 +264,22 @@ describe("runtimeerror", function() {
           spyOn(account.api, 'is_closed').andCallFake(function() { return true; });
         });
         it("should call account.reopen", function() {
+          var meta = { runtimeerror: [today, 1]};
+          var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
+          var json = JSON.stringify(meta);
+          var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
           runtimeerror.handle(account, "titleA", "bodyB", noop);
           expect(account.find_issue_by_title).toHaveBeenCalled();
-          expect(account.reopen_issue)       .toHaveBeenCalledWith(account.uid_for(something), { title: "titleA", body: "bodyB<br/>\n{\"runtimeerror\":[\"" + today + "\",1]}" }, jasmine.any(Function));
+          expect(account.reopen_issue)       .toHaveBeenCalledWith(account.uid_for(something), { title: "titleA", body: "bodyB<br/>\n"+img }, jasmine.any(Function));
           expect(account.update_issue)       .not.toHaveBeenCalled();
         });
         it("should reopen_issue with HTML wrapper removed from body", function() {
+          var meta = { runtimeerror: [today, 1]};
+          var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
+          var json = JSON.stringify(meta);
+          var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
           runtimeerror.handle(account, "titleA", "<HTML>\n<head>\n</head>\n<body>bodyB</body>\n</HTML>", noop);
-          expect(account.reopen_issue)      .toHaveBeenCalledWith(account.uid_for(something), { title: "titleA", body: "<body>bodyB</body><br/>\n{\"runtimeerror\":[\"" + today + "\",1]}" }, noop);
+          expect(account.reopen_issue)      .toHaveBeenCalledWith(account.uid_for(something), { title: "titleA", body: "<body>bodyB</body><br/>\n"+img }, noop);
         });
         it("should abort (when wontfix)", function() {
           spyOn(account.api, 'is_wontfix').andCallFake(function() { return true; });
