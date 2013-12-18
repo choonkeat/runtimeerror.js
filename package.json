@@ -1,6 +1,6 @@
 {
   "name": "runtimeerror.js",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "standalone runtimeerror",
   "repository": "none",
   "readme": "See README.md",
@@ -24,7 +24,7 @@
     "jasmine-node": "~1.11.0"
   },
   "scripts": {
-    "test": "jasmine-node spec/",
+    "test": "which guard && PROVIDER=none REPO=x/y SECRET=z LABEL=b guard || PROVIDER=none REPO=x/y SECRET=z LABEL=b jasmine-node spec/",
     "start": "node web.js"
   },
   "author": "Chew Choon Keat <choonkeat@gimmieworld.com>",

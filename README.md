@@ -101,6 +101,10 @@ Command line arguments
 node cli.js "title of bug" "bug description body"
 ```
 
+## Changelog
+
+* `0.2.0` Issue description now shows sparkline image, reflecting error trend of past 7 days
+
 ## LICENSE
 
 GPL v2
