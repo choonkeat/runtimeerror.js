@@ -95,7 +95,7 @@ describe("runtimeerror", function() {
   describe("extract_repo_secret_provider(email)", function() {
     it("should return object with attributes: repo, secret, provider", function() {
       var result = runtimeerror.extract_repo_secret_provider('"hello/world.js" <abc.def@smtp.random.com>');
-      expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world.js', secret: 'abc.def', provider: 'smtp.random' }));
+      expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world.js', secret: 'abc.def', provider: 'smtp' }));
     });
     it("should return blank object with invalid email", function() {
       expect(JSON.stringify(runtimeerror.extract_repo_secret_provider('hello'))).toBe(JSON.stringify({ }));
