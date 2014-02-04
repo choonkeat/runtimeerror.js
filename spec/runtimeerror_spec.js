@@ -92,7 +92,7 @@ describe("runtimeerror", function() {
       expect(runtimeerror.update_body_suffix('hello<br/>\n'+img)).toBe('hello<br/>\n'+img2);
     })
   });
-  describe("extract_repo_secret_provider(email)", function() {
+  describe("extract_repo_secret_provider(email_address)", function() {
     it("should return object with attributes: repo, secret, provider", function() {
       var result = runtimeerror.extract_repo_secret_provider('"hello/world.js" <abc.def@smtp.random.com>');
       expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world.js', secret: 'abc.def', provider: 'smtp' }));
@@ -101,6 +101,13 @@ describe("runtimeerror", function() {
       expect(JSON.stringify(runtimeerror.extract_repo_secret_provider('hello'))).toBe(JSON.stringify({ }));
       expect(JSON.stringify(runtimeerror.extract_repo_secret_provider(null))).toBe(JSON.stringify({ }));
       expect(JSON.stringify(runtimeerror.extract_repo_secret_provider())).toBe(JSON.stringify({ }));
+    });
+  });
+  describe("extract_repo_number_provider_secret(message_id)", function() {
+    it("should return object with attributes: repo, number, provider, secret", function() {
+      // <{repo}/issues/{number}@{provider}.{secret}.random>
+      var result = runtimeerror.extract_repo_number_provider_secret('<hello/world/issues/42@none.abc.def.1391541483184>');
+      expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world', number: '42', provider: 'none', secret: 'abc.def' }));
     });
   });
   describe("skip_duplicate", function() {
