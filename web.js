@@ -43,6 +43,12 @@ server.addListener('request', function(req, res) {
     if (content_type.match(/multipart\/form/i)) {
       var form = new formidable.IncomingForm();
       form.encoding = 'utf-8';
+      form.on('field', function(name, value) {
+        if (name != 'message') return;
+        form.removeAllListeners('end');
+        mailparser.write(uri.message);
+        mailparser.end();
+      });
       form.on('file', function(name, file) {
         if (name != 'message') return;
         form.removeAllListeners('end');
