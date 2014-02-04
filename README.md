@@ -44,28 +44,15 @@ LABEL=bug # (optional)
 
 This setup uses the `web.js` mechanism.
 
-Setting environment variables is optional because you can also use per-request config (see next point).
+Setting environment variables is optional & not recommended. A better way is to use per-request config (see next point).
 
-### Per-Request config via email address
+### RECOMMENDED: Per-Request config via email address
 
-`runtimeerror.js` parses the email address format to extract `REPO`, `SECRET`, `PROVIDER` in the format of `"{repo}" <{secret}@{provider}.com>`
+runtimeerror.js can parse the `to` email address format to extract `REPO`, `SECRET`, `PROVIDER` in the format of `"{repo}" <{secret}@{provider}.yourdomain.com>`
 
+e.g. `"user/proj" <aaabbccddeeff@github.yourdomain.com>` would configure the error to be posted to `user/proj` repository on `github` using the access token `aaabbccddeeff`
 
-For example:
-
-```
-"rails/rails" <aaabbccddeeff@github.com>
-```
-
-would configure the error to be posted to
-
-```
-REPO=rails/rails
-SECRET=aaabbccddeeff
-PROVIDER=github
-```
-
-This allows for multiple `repo/secret/provider` accounts to share the same instance of `runtimeerror.js` deployed
+This allows for multiple `repo/secret/provider` accounts to share the same deployment of `runtimeerror.js`.
 
 ## Mechanisms
 
