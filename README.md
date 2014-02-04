@@ -20,7 +20,7 @@ NOTE: integrations to `trello`, `pivotal tracker` or any other things should be 
 
 The way github works is that the creator/commenter of an issue will not be notified. This is a correct logic, but does not suit our purpose.
 
-We recommend using a separate `bot` github account instead of your own so that when errors happen, `bot` will create the issues and you'll get the github notifications. 
+We recommend using a separate `bot` github account instead of your own so that when errors happen, `bot` will create the issues and you'll get the github notifications. (See "Emails" section below)
 
 1. Create a separate `github` account, e.g. `bot`
 2. Add `bot` to the repository you want to integrate with.
@@ -87,6 +87,15 @@ Command line arguments
 ```
 node cli.js "title of bug" "bug description body"
 ```
+
+## Emails
+
+If you choose NOT to use a separate `bot` github account, runtimeerror.js can still mimick github to send you email notifications. You must set these environment variables:
+
+* `MAILER_OPTIONS_JSON` is the `smtp_options` parameter for [Nodemailer](https://github.com/andris9/Nodemailer) e.g. `{"debug": true}`
+* `MAILER_TYPE` is the `type` parameter for [Nodemailer](https://github.com/andris9/Nodemailer) e.g. `direct`
+* `MAILER_FROM` if you're using `MAILER_TYPE=direct`, your email hostname MUST match the reverse DNS lookup of your ip address, otherwise services like Gmail will likely reject. e.g. runtimeerror@compute-1.amazonaws.com
+ * `MAILER_REPLY_TO` this should point to a [diymailin](https://github.com/choonkeat/diymailin) email address (or something equivalent) where the email reply is passed into runtimeerror.js again -- to be added as comment to the github issue.
 
 ## Changelog
 

@@ -18,6 +18,7 @@
     "lodash": "~2.4.0",
     "strftime": "~0.7.0",
     "request": "~2.27.0",
+    "nodemailer": "~0.6.0",
     "node-static": "~0.7.2"
   },
   "devDependencies": {

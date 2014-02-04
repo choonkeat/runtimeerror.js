@@ -79,4 +79,22 @@ describe("github", function() {
       expect(provider.is_wontfix({ labels: [{ name: "hey" }, { name: "WontFix" }] })).toBeTruthy();
     });
   });
+  describe('my_email', function() {
+    it('should return "email" attribute of authenticated user', function() {
+      var email = 'verified@email.com';
+      var bool = false;
+      spyOn(provider.me, "info").andCallFake(function(fn) {
+        fn(null, { login: 'blah', email: email });
+      });
+      var callback = function(err, string) {
+        expect(err).not.toBeTruthy();
+        expect(string).toBe(email);
+        bool = true;
+      }
+      runs(function() {
+        provider.my_email(callback);
+      });
+      waitsFor(function() { return bool; });
+    });
+  });
 });

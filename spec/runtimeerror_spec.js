@@ -191,7 +191,7 @@ describe("runtimeerror", function() {
               var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
               var json = JSON.stringify(meta);
               var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
-              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "bodyB<br/>\n"+img }, noop);
+              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "bodyB<br/>\n"+img }, jasmine.any(Function));
             }
             return called_find_issue_by_title;
           });
@@ -207,7 +207,7 @@ describe("runtimeerror", function() {
               var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
               var json = JSON.stringify(meta);
               var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
-              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "<body>bodyB</body><br/>\n"+img }, noop);
+              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "<body>bodyB</body><br/>\n"+img }, jasmine.any(Function));
             }
             return called_find_issue_by_title;
           });
@@ -226,7 +226,7 @@ describe("runtimeerror", function() {
               var img_url = runtimeerror.sparkline_url(meta.runtimeerror);
               var json = JSON.stringify(meta);
               var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
-              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "bodyB<br/>\n"+img }, noop);
+              expect(account.create_issue).toHaveBeenCalledWith({ title: "titleA", body: "bodyB<br/>\n"+img }, jasmine.any(Function));
             }
             return called_find_issue_by_title;
           });
@@ -244,7 +244,7 @@ describe("runtimeerror", function() {
         it("should call account.update_issue ONLY", function() {
           runtimeerror.handle(account, "titleA", "bodyB", noop);
           expect(account.find_issue_by_title).toHaveBeenCalled();
-          expect(account.update_issue)       .toHaveBeenCalledWith(account.uid_for(something), something, noop);
+          expect(account.update_issue)       .toHaveBeenCalledWith(account.uid_for(something), something, jasmine.any(Function));
           expect(account.reopen_issue)       .not.toHaveBeenCalled();
         });
         it("should abort (when wontfix)", function() {
@@ -279,7 +279,7 @@ describe("runtimeerror", function() {
           var json = JSON.stringify(meta);
           var img = "<img src='" + img_url + "' alt='" + json + "' title='" + json + "'/>";
           runtimeerror.handle(account, "titleA", "<HTML>\n<head>\n</head>\n<body>bodyB</body>\n</HTML>", noop);
-          expect(account.reopen_issue)      .toHaveBeenCalledWith(account.uid_for(something), { title: "titleA", body: "<body>bodyB</body><br/>\n"+img }, noop);
+          expect(account.reopen_issue)      .toHaveBeenCalledWith(account.uid_for(something), { title: "titleA", body: "<body>bodyB</body><br/>\n"+img }, jasmine.any(Function));
         });
         it("should abort (when wontfix)", function() {
           spyOn(account.api, 'is_wontfix').andCallFake(function() { return true; });
@@ -287,6 +287,57 @@ describe("runtimeerror", function() {
           expect(account.find_issue_by_title).toHaveBeenCalled();
           expect(account.reopen_issue)       .not.toHaveBeenCalled();
           expect(account.update_issue)       .not.toHaveBeenCalled();
+        });
+      });
+
+      describe("with email", function() {
+        var email = 'verified@email.com';
+        beforeEach(function() {
+          spyOn(account.api, "my_email").andCallFake(function(fn) { fn(null, email); });
+        });
+        it('should deliver email to account.api.me', function() {
+          var bool = false;
+          spyOn(account, 'find_issue_by_title').andCallFake(function(title, callback) { process.nextTick(function() { callback(null, null); }); });
+          spyOn(account, 'create_issue').andCallFake(function(attrs, callback) { process.nextTick(function() { callback(null, {
+            "number": 42,
+            "state": "open",
+            "url": "https://api.github.com/repos/octocat/Hello-World/issues/1347"
+          }); }); });
+          spyOn(runtimeerror, 'notify').andCallFake(function() { bool = true; });
+          runs(function() {
+            runtimeerror.handle(account, "titleA", "bodyB", noop);
+          })
+          waitsFor(function() {
+            return bool;
+          });
+        });
+      })
+    });
+    describe('notify', function() {
+      var attrs = {
+        "url": "https://api.github.com/repos/octocat/Hello-World/issues/1347",
+        "html_url": "https://github.com/octocat/Hello-World/issues/1347",
+        "number": 1347,
+        "title": "Found a bug",
+        "body": "I'm having a problem with this.",
+        "user": {
+          "login": "octocat",
+        }
+      };
+      var email = 'verified@email.com';
+      it('should smtp.send', function() {
+        var bool = false;
+        var transport = { sendMail: noop };
+        spyOn(transport, 'sendMail').andCallFake(function(opts, fn) {
+          expect(opts.to).toBe(email);
+          bool = true;
+          fn();
+        });
+        spyOn(account.api, "my_email").andCallFake(function(fn) { fn(null, email); });
+        spyOn(runtimeerror, "email_transport").andCallFake(function() { return transport; });
+        runtimeerror.notify(account, attrs, noop);
+        waitsFor(function() {
+          return bool;
         });
       });
     });
