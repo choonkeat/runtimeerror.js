@@ -1,6 +1,6 @@
 # bugsnag
 
-We can use the `bugsnag` npm module in your app to talk to a `runtimeerror.js` server by configuring to connect to your `runtimeerror.js` server (with SSL turned off)
+We can use the [bugsnag](https://github.com/develsadvocates/bugsnag-node) npm module in your app to talk to a `runtimeerror.js` server by configuring to connect to your `runtimeerror.js` server (with SSL turned off)
 
 ```
 var bugsnag = require("bugsnag");

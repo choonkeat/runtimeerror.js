@@ -1,6 +1,6 @@
 # rollbar
 
-We can use the `rollbar` npm module in your app to talk to a `runtimeerror.js` server by configuring to connect to your `runtimeerror.js` server
+We can use the [rollbar](https://github.com/develsadvocates/node_rollbar) npm module in your app to talk to a `runtimeerror.js` server by configuring to connect to your `runtimeerror.js` server
 
 ``` javascript
 var rollbar = require("rollbar");
