@@ -97,10 +97,10 @@ describe("runtimeerror", function() {
       var result = runtimeerror.extract_repo_secret_provider('"hello/world.js" <abc.def@smtp.random.com>');
       expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world.js', secret: 'abc.def', provider: 'smtp' }));
     });
-    it("should return blank object with invalid email", function() {
-      expect(JSON.stringify(runtimeerror.extract_repo_secret_provider('hello'))).toBe(JSON.stringify({ }));
-      expect(JSON.stringify(runtimeerror.extract_repo_secret_provider(null))).toBe(JSON.stringify({ }));
-      expect(JSON.stringify(runtimeerror.extract_repo_secret_provider())).toBe(JSON.stringify({ }));
+    it("should return null with invalid email", function() {
+      expect(runtimeerror.extract_repo_secret_provider('hello')).toBe(undefined);
+      expect(runtimeerror.extract_repo_secret_provider(null)).toBe(undefined);
+      expect(runtimeerror.extract_repo_secret_provider()).toBe(undefined);
     });
   });
   describe("extract_repo_number_provider_secret(message_id)", function() {
@@ -108,6 +108,12 @@ describe("runtimeerror", function() {
       // <{repo}/issues/{number}@{provider}.{secret}.random>
       var result = runtimeerror.extract_repo_number_provider_secret('<hello/world/issues/42@none.abc.def.1391541483184>');
       expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world', number: '42', provider: 'none', secret: 'abc.def' }));
+    });
+    it("should return null with invalid message_id", function() {
+      expect(runtimeerror.extract_repo_number_provider_secret('hello@world.com')).toBe(undefined);
+      expect(runtimeerror.extract_repo_number_provider_secret('hello')).toBe(undefined);
+      expect(runtimeerror.extract_repo_number_provider_secret(null)).toBe(undefined);
+      expect(runtimeerror.extract_repo_number_provider_secret()).toBe(undefined);
     });
   });
   describe("skip_duplicate", function() {

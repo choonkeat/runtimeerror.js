@@ -19,9 +19,21 @@ var create_mailparser = function(res, callback) {
     title = mail_object.subject;
     body = mail_object.html || mail_object.text;
     if (! (title && body)) return callback(invalid_eml_message);
-    var account = new Account(runtimeerror.extract_repo_secret_provider(mail_object.headers.to));
-    runtimeerror.handle(account, title, body, callback);
-    callback();
+    var reply_to;
+    lodash.find(mail_object.references, function(messageId) {
+      reply_to = runtimeerror.extract_repo_number_provider_secret(messageId);
+      return reply_to;
+    });
+    var to_account = runtimeerror.extract_repo_secret_provider(mail_object.headers.to);
+    if (reply_to) {
+      var account = new Account(reply_to);
+      account.api.comment_issue(reply_to.number, { body: mail_object.html || mail_object.text }, callback);
+    } else if (to_account) {
+      var account = new Account(to_account);
+      runtimeerror.handle(account, title, body, callback);
+    } else {
+      callback('Unknown');
+    }
   });
   return mailparser;
 }
@@ -75,8 +87,13 @@ server.addListener('request', function(req, res) {
           if (payload && payload.notifier && (payload.notifier.url || "").match('bugsnag')) {
             lodash.forEach(payload.events, function(event) {
               lodash.forEach(event.exceptions, function(ex) {
-                var account = new Account(runtimeerror.extract_repo_secret_provider(payload.apiKey));
-                runtimeerror.handle(account, ex.message, "``` json\n" + JSON.stringify(ex, null, 2) + "\n```\n", callback);
+                var to_account = runtimeerror.extract_repo_secret_provider(payload.apiKey)
+                if (to_account) {
+                  var account = new Account(to_account);
+                  runtimeerror.handle(account, ex.message, "``` json\n" + JSON.stringify(ex, null, 2) + "\n```\n", callback);
+                } else {
+                  callback(' ');
+                }
               });
             });
           } else if (payload && payload.access_token && payload.data) {
@@ -94,12 +111,22 @@ server.addListener('request', function(req, res) {
                   if (last_frame && last_frame.context && last_frame.context.pre) {
                     body = ['## Code\n```', last_frame.context.pre.join("\n"), last_frame.code, last_frame.context.post.join("\n"), '```'].join("\n") + "\n" + body;
                   }
-                  var account = new Account(runtimeerror.extract_repo_secret_provider(payload.access_token));
-                  runtimeerror.handle(account, title, body, callback);
+                  var to_account = runtimeerror.extract_repo_secret_provider(payload.access_token);
+                  if (to_account) {
+                    var account = new Account(to_account);
+                    runtimeerror.handle(account, title, body, callback);
+                  } else {
+                    callback('Unknown');
+                  }
                 } else if (item.body && item.body.message) {
                   var body = "\n``` json\n" + JSON.stringify(item.body.message, null, 2) + "\n```\n";
-                  var account = new Account(runtimeerror.extract_repo_secret_provider(payload.access_token));
-                  runtimeerror.handle(account, item.body.message.body || JSON.stringify(item.body.message), body, callback);
+                  var to_account = runtimeerror.extract_repo_secret_provider(payload.access_token);
+                  if (to_account) {
+                    var account = new Account(to_account);
+                    runtimeerror.handle(account, item.body.message.body || JSON.stringify(item.body.message), body, callback);
+                  } else {
+                    callback('Unknown');
+                  }
                 }
               }
             });
