@@ -97,6 +97,10 @@ describe("runtimeerror", function() {
       var result = runtimeerror.extract_repo_secret_provider('"hello/world.js" <abc.def@smtp.random.com>');
       expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world.js', secret: 'abc.def', provider: 'smtp' }));
     });
+    it("should pluck label via user+label@host format", function() {
+      var result = runtimeerror.extract_repo_secret_provider('"hello/world.js" <abc.def+mylabel123+456@smtp.random.com>');
+      expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world.js', secret: 'abc.def', label: 'mylabel123 456', provider: 'smtp' }));
+    });
     it("should return null with invalid email", function() {
       expect(runtimeerror.extract_repo_secret_provider('hello')).toBe(undefined);
       expect(runtimeerror.extract_repo_secret_provider(null)).toBe(undefined);
