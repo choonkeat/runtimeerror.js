@@ -20,7 +20,7 @@ var create_mailparser = function(res, callback) {
     body = mail_object.html || mail_object.text;
     if (! (title && body)) return callback(invalid_eml_message);
     var reply_to;
-    lodash.find(mail_object.references, function(messageId) {
+    lodash.find([].concat(mail_object.inReplyTo || []).concat(mail_object.references || []), function(messageId) {
       reply_to = runtimeerror.extract_repo_number_provider_secret(messageId);
       return reply_to;
     });
@@ -34,7 +34,7 @@ var create_mailparser = function(res, callback) {
       var account = new Account(to_account);
       runtimeerror.handle(account, title, body, callback);
     } else {
-      console.log("Unknown", { to: mail_object.headers.to, ref: mail_object.references });
+      console.log("Unknown", { to: mail_object.headers.to, ref: mail_object.references, inReplyTo: mail_object.inReplyTo });
       callback('Unknown');
     }
   });

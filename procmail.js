@@ -6,7 +6,7 @@ var MailParser = require("mailparser").MailParser,
     mailparser = new MailParser();
 mailparser.on("end", function(mail_object) {
   var reply_to;
-  lodash.find(mail_object.references, function(messageId) {
+  lodash.find([].concat(mail_object.inReplyTo || []).concat(mail_object.references || []), function(messageId) {
     reply_to = runtimeerror.extract_repo_number_provider_secret(messageId);
     return reply_to;
   });
