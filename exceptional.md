@@ -6,8 +6,9 @@ We can use the [exceptional](https://github.com/develsadvocates/exceptional) gem
 Edit your `config/exceptional.yml`:
 
 ```
-api-key: apiKey
-remote-host: project-runtimeerrorjs.herokuapp.com
+api-key: <%= URI.escape(apiKey).inspect %>
+remote-host: <%= URI.parse('http://localhost:3000/' || 'http://project-runtimeerrorjs.herokuapp.com/').host %>
+remote-port: <%= URI.parse('http://localhost:3000/' || 'http://project-runtimeerrorjs.herokuapp.com/').port %>
 http-open-timeout: 30
 http-read-timeout: 30
 ```
@@ -19,7 +20,3 @@ exceptional test
 ```
 
 NOTE: `apiKey` should be formatted as `"{repo}" <{secret}@{provider}.yourdomain.com>`; see `Config via email address` section in README.md
-
-### Important
-
-The value of `apiKey` in `config/exceptional.yml` must be URI escaped. For example `hello/world <secret@provider.yourdomain.com>` must be written as `hello/world%20%3Csecret@provider.yourdomain.com%3E`
