@@ -24,4 +24,4 @@ except:
     rollbar.report_exc_info()
 ```
 
-NOTE: `apiKey` should be formatted as `repo <secret@provider.com>`; see `Config via email address` section in README.md
+NOTE: `apiKey` should be formatted as `"{repo}" <{secret}@{provider}.yourdomain.com>`; see `Config via email address` section in README.md
