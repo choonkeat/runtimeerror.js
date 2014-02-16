@@ -13,6 +13,7 @@
     "mailparser": "~0.3.6",
     "soupselect": "~0.2.0",
     "htmlparser2": "~3.3.0",
+    "escape-html": "~1.0.1",
     "domutils": "~1.2.0",
     "formidable": "~1.0.14",
     "lodash": "~2.4.0",
