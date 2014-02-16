@@ -1,0 +1,36 @@
+{
+    "access_token": "POST_SERVER_ITEM_ACCESS_TOKEN",
+    "data": {
+        "body": {
+            "trace": {
+                "exception": {
+                    "class": "NameError",
+                    "message": "name 'main_app_loop' is not defined"
+                },
+                "frames": [
+                    {
+                        "code": "main_app_loop()",
+                        "filename": "sample.py",
+                        "lineno": 5,
+                        "method": "<module>"
+                    }
+                ]
+            }
+        },
+        "environment": "production",
+        "language": "python",
+        "level": "error",
+        "notifier": {
+            "name": "pyrollbar",
+            "version": "0.5.14"
+        },
+        "server": {
+            "argv": [
+                "sample.py"
+            ],
+            "host": "machine-name.local"
+        },
+        "timestamp": 1386136858,
+        "uuid": "some-uuid"
+    }
+}

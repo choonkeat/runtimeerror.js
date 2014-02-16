@@ -1,0 +1,110 @@
+{
+    "access_token": "POST_SERVER_ITEM_ACCESS_TOKEN",
+    "data": [
+        {
+            "body": {
+                "trace": {
+                    "exception": {
+                        "class": "ReferenceError",
+                        "message": "bar is not defined"
+                    },
+                    "frames": [
+                        {
+                            "colno": 3,
+                            "filename": "node.js",
+                            "lineno": 901,
+                            "method": "<unknown>"
+                        },
+                        {
+                            "colno": 16,
+                            "filename": "node.js",
+                            "lineno": 119,
+                            "method": "startup"
+                        },
+                        {
+                            "colno": 10,
+                            "filename": "module.js",
+                            "lineno": 497,
+                            "method": "Function.Module.runMain"
+                        },
+                        {
+                            "colno": 12,
+                            "filename": "module.js",
+                            "lineno": 312,
+                            "method": "Function.Module._load"
+                        },
+                        {
+                            "colno": 32,
+                            "filename": "module.js",
+                            "lineno": 356,
+                            "method": "Module.load"
+                        },
+                        {
+                            "colno": 10,
+                            "filename": "module.js",
+                            "lineno": 474,
+                            "method": "Object.Module._extensions..js"
+                        },
+                        {
+                            "colno": 26,
+                            "filename": "module.js",
+                            "lineno": 456,
+                            "method": "Module._compile"
+                        },
+                        {
+                            "code": "    foo();",
+                            "colno": 5,
+                            "context": {
+                                "post": [
+                                    "    break;",
+                                    "  case 2:",
+                                    "    var express = require('express');"
+                                ],
+                                "pre": [
+                                    "      return bar();",
+                                    "    }",
+                                    ""
+                                ]
+                            },
+                            "filename": "/somepath/deleteme.js",
+                            "lineno": 28,
+                            "method": "Object.<anonymous>"
+                        },
+                        {
+                            "code": "      return bar();",
+                            "colno": 14,
+                            "context": {
+                                "post": [
+                                    "    }",
+                                    "",
+                                    "    foo();"
+                                ],
+                                "pre": [
+                                    "    rollbar.handleUncaughtExceptions();",
+                                    "",
+                                    "    function foo() {"
+                                ]
+                            },
+                            "filename": "/somepath/deleteme.js",
+                            "lineno": 25,
+                            "method": "foo"
+                        }
+                    ]
+                }
+            },
+            "environment": "development",
+            "framework": "node-js",
+            "language": "javascript",
+            "level": "error",
+            "notifier": {
+                "name": "node_rollbar",
+                "version": "0.2.8"
+            },
+            "server": {
+                "host": "machine-name"
+            },
+            "timestamp": 1386093816,
+            "uuid": "some-uuid"
+        }
+    ]
+}

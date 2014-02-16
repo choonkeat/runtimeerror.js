@@ -1,0 +1,71 @@
+{
+    "apiKey": "your-api-key-here",
+    "events": [
+        {
+            "appVersion": "0.1.0",
+            "exceptions": [
+                {
+                    "errorClass": "BadError",
+                    "message": "Something went badly wrong",
+                    "stacktrace": [
+                        {
+                            "columnNumber": 16,
+                            "file": "deleteme.js",
+                            "inProject": true,
+                            "lineNumber": 8,
+                            "method": "none"
+                        },
+                        {
+                            "columnNumber": 26,
+                            "file": "module.js",
+                            "lineNumber": 456,
+                            "method": "_compile"
+                        },
+                        {
+                            "columnNumber": 10,
+                            "file": "module.js",
+                            "lineNumber": 474,
+                            "method": "Module._extensions..js"
+                        },
+                        {
+                            "columnNumber": 32,
+                            "file": "module.js",
+                            "lineNumber": 356,
+                            "method": "load"
+                        },
+                        {
+                            "columnNumber": 12,
+                            "file": "module.js",
+                            "lineNumber": 312,
+                            "method": "Module._load"
+                        },
+                        {
+                            "columnNumber": 10,
+                            "file": "module.js",
+                            "lineNumber": 497,
+                            "method": "Module.runMain"
+                        },
+                        {
+                            "columnNumber": 16,
+                            "file": "node.js",
+                            "lineNumber": 119,
+                            "method": "startup"
+                        },
+                        {
+                            "columnNumber": 3,
+                            "file": "node.js",
+                            "lineNumber": 901,
+                            "method": "none"
+                        }
+                    ]
+                }
+            ],
+            "releaseStage": "production"
+        }
+    ],
+    "notifier": {
+        "name": "Bugsnag Node Notifier",
+        "url": "https://github.com/bugsnag/bugsnag-node",
+        "version": "1.1.3"
+    }
+}

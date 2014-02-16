@@ -1,0 +1,25 @@
+{
+    "access_token": "POST_SERVER_ITEM_ACCESS_TOKEN",
+    "data": [
+        {
+            "body": {
+                "message": {
+                    "body": "Hello world!"
+                }
+            },
+            "environment": "development",
+            "framework": "node-js",
+            "language": "javascript",
+            "level": "error",
+            "notifier": {
+                "name": "node_rollbar",
+                "version": "0.2.8"
+            },
+            "server": {
+                "host": "machine-name"
+            },
+            "timestamp": 1386093850,
+            "uuid": "some-uuid"
+        }
+    ]
+}

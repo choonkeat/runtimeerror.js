@@ -32,21 +32,20 @@ describe("runtimeerror", function() {
       expect(runtimeerror.make_generic_title(false)).toBe("");
     })
   });
-  describe("json2markdown", function() {
-    // var json = JSON.parse(fs.readFileSync("samples/exceptional.json"));
+  describe("json2htmltables", function() {
     it("should show table for key values", function() {
       var json = { key1: "val<u>e1", key2: "value2" }
-      expect(runtimeerror.json2markdown(json)).toBe('<table><tr><th align="left">key1</th><td align="left">val&lt;u&gt;e1</td></tr><tr><th align="left">key2</th><td align="left">value2</td></tr></table>');
+      expect(runtimeerror.json2htmltables(json)).toBe('<table><tr><th align="left">key1</th><td align="left">val&lt;u&gt;e1</td></tr><tr><th align="left">key2</th><td align="left">value2</td></tr></table>');
     });
     it("should show key as header if value is hash", function() {
       var json = { key1: "value1", key2: {
         sub1: "v1", sub2: "v2"
       }, key3: "value3" }
-      expect(runtimeerror.json2markdown(json)).toBe('<table><tr><th align="left">key1</th><td align="left">value1</td></tr></table><h4>key2</h4><table><tr><th align="left">sub1</th><td align="left">v1</td></tr><tr><th align="left">sub2</th><td align="left">v2</td></tr></table><table><tr><th align="left">key3</th><td align="left">value3</td></tr></table>');
+      expect(runtimeerror.json2htmltables(json)).toBe('<table><tr><th align="left">key1</th><td align="left">value1</td></tr></table><h4>key2</h4><table><tr><th align="left">sub1</th><td align="left">v1</td></tr><tr><th align="left">sub2</th><td align="left">v2</td></tr></table><table><tr><th align="left">key3</th><td align="left">value3</td></tr></table>');
     })
     it("should show values as rows (without keys) if value is array", function() {
       var json = { key1: "value1", key2: ["one1", "two2", "three3"], key3: "value3" }
-      expect(runtimeerror.json2markdown(json)).toBe('<table><tr><th align="left">key1</th><td align="left">value1</td></tr></table><h4>key2</h4><pre>one1\ntwo2\nthree3</pre>\n<table><tr><th align="left">key3</th><td align="left">value3</td></tr></table>');
+      expect(runtimeerror.json2htmltables(json)).toBe('<table><tr><th align="left">key1</th><td align="left">value1</td></tr></table><h4>key2</h4>\n<pre>\none1\ntwo2\nthree3\n</pre>\n<table><tr><th align="left">key3</th><td align="left">value3</td></tr></table>');
     })
   });
   describe("sparkline_url", function() {

@@ -109,6 +109,8 @@ If you choose NOT to use a separate `bot` github account, runtimeerror.js can st
 
 ## Changelog
 
+* `0.2.4`
+ > Using generic `json2htmltables` processing on api payload + stacktrace simplification for api payload that has complex models
 * `0.2.2`
  > Change "email format" to support "provider" as subdomain; enable email notification to authenticated user; add support for Exceptional
 * `0.2.1`

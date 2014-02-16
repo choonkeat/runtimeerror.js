@@ -1,0 +1,234 @@
+{
+    "access_token": "POST_SERVER_ITEM_ACCESS_TOKEN",
+    "data": [
+        {
+            "body": {
+                "trace": {
+                    "exception": {
+                        "class": "Error",
+                        "message": "Hello World"
+                    },
+                    "frames": [
+                        {
+                            "code": "    next();",
+                            "colno": 5,
+                            "context": {
+                                "post": [
+                                    "  };",
+                                    "};",
+                                    ""
+                                ],
+                                "pre": [
+                                    "        : {};",
+                                    "    }",
+                                    ""
+                                ]
+                            },
+                            "filename": "/somepath/node_modules/express/node_modules/connect/lib/middleware/query.js",
+                            "lineno": 44,
+                            "method": "Object.query [as handle]"
+                        },
+                        {
+                            "code": "        layer.handle(req, res, next);",
+                            "colno": 15,
+                            "context": {
+                                "post": [
+                                    "      } else {",
+                                    "        next();",
+                                    "      }"
+                                ],
+                                "pre": [
+                                    "          next(err);",
+                                    "        }",
+                                    "      } else if (arity < 4) {"
+                                ]
+                            },
+                            "filename": "/somepath/node_modules/express/node_modules/connect/lib/proto.js",
+                            "lineno": 193,
+                            "method": "next"
+                        },
+                        {
+                            "code": "    next();",
+                            "colno": 5,
+                            "context": {
+                                "post": [
+                                    "  }",
+                                    "};",
+                                    ""
+                                ],
+                                "pre": [
+                                    "",
+                                    "    res.locals = res.locals || utils.locals(res);",
+                                    ""
+                                ]
+                            },
+                            "filename": "/somepath/node_modules/express/lib/middleware.js",
+                            "lineno": 30,
+                            "method": "Object.expressInit [as handle]"
+                        },
+                        {
+                            "code": "        layer.handle(req, res, next);",
+                            "colno": 15,
+                            "context": {
+                                "post": [
+                                    "      } else {",
+                                    "        next();",
+                                    "      }"
+                                ],
+                                "pre": [
+                                    "          next(err);",
+                                    "        }",
+                                    "      } else if (arity < 4) {"
+                                ]
+                            },
+                            "filename": "/somepath/node_modules/express/node_modules/connect/lib/proto.js",
+                            "lineno": 193,
+                            "method": "next"
+                        },
+                        {
+                            "code": "    self._dispatch(req, res, next);",
+                            "colno": 10,
+                            "context": {
+                                "post": [
+                                    "  };",
+                                    "}",
+                                    ""
+                                ],
+                                "pre": [
+                                    "  this.caseSensitive = options.caseSensitive;",
+                                    "  this.strict = options.strict;",
+                                    "  this.middleware = function router(req, res, next){"
+                                ]
+                            },
+                            "filename": "/somepath/node_modules/express/lib/router/index.js",
+                            "lineno": 33,
+                            "method": "Object.router"
+                        },
+                        {
+                            "code": "  })(0);",
+                            "colno": 5,
+                            "context": {
+                                "post": [
+                                    "};",
+                                    "",
+                                    "/**"
+                                ],
+                                "pre": [
+                                    "        callbacks(err);",
+                                    "      }",
+                                    "    }"
+                                ]
+                            },
+                            "filename": "/somepath/node_modules/express/lib/router/index.js",
+                            "lineno": 173,
+                            "method": "Router._dispatch"
+                        },
+                        {
+                            "code": "    param(err);",
+                            "colno": 5,
+                            "context": {
+                                "post": [
+                                    "",
+                                    "    // single param callbacks",
+                                    "    function paramCallback(err) {"
+                                ],
+                                "pre": [
+                                    "      }",
+                                    "    };",
+                                    ""
+                                ]
+                            },
+                            "filename": "/somepath/node_modules/express/lib/router/index.js",
+                            "lineno": 145,
+                            "method": "pass"
+                        },
+                        {
+                            "code": "          callbacks();",
+                            "colno": 11,
+                            "context": {
+                                "post": [
+                                    "        }",
+                                    "      } catch (err) {",
+                                    "        param(err);"
+                                ],
+                                "pre": [
+                                    "          param();",
+                                    "        } else {",
+                                    "          i = 0;"
+                                ]
+                            },
+                            "filename": "/somepath/node_modules/express/lib/router/index.js",
+                            "lineno": 138,
+                            "method": "param"
+                        },
+                        {
+                            "code": "          if (fn.length < 4) return fn(req, res, callbacks);",
+                            "colno": 37,
+                            "context": {
+                                "post": [
+                                    "          callbacks();",
+                                    "        } else {",
+                                    "          nextRoute(err);"
+                                ],
+                                "pre": [
+                                    "          if (fn.length < 4) return callbacks(err);",
+                                    "          fn(err, req, res, callbacks);",
+                                    "        } else if (fn) {"
+                                ]
+                            },
+                            "filename": "/somepath/node_modules/express/lib/router/index.js",
+                            "lineno": 164,
+                            "method": "callbacks"
+                        },
+                        {
+                            "code": "      throw new Error('Hello World');",
+                            "colno": 13,
+                            "context": {
+                                "post": [
+                                    "    });",
+                                    "",
+                                    "    app.use(rollbar.errorHandler(\"ACCESS_TOKEN\","
+                                ],
+                                "pre": [
+                                    "    var app = express();",
+                                    "    app.get('/', function(req, res) {",
+                                    "      req.user_id = \"test-user\";"
+                                ]
+                            },
+                            "filename": "/somepath/deleteme.js",
+                            "lineno": 35,
+                            "method": "app.use.rollbar.errorHandler.environment"
+                        }
+                    ]
+                }
+            },
+            "environment": "development",
+            "framework": "node-js",
+            "language": "javascript",
+            "level": "error",
+            "notifier": {
+                "name": "node_rollbar",
+                "version": "0.2.8"
+            },
+            "person": {
+                "id": "test-user"
+            },
+            "request": {
+                "GET": {},
+                "headers": {
+                    "accept": "*/*",
+                    "host": "localhost:9876",
+                    "user-agent": "curl/7.30.0"
+                },
+                "method": "GET",
+                "url": "https://localhost:9876/",
+                "user_ip": "127.0.0.1"
+            },
+            "server": {
+                "host": "machine-name"
+            },
+            "timestamp": 1386093784,
+            "uuid": "some-uuid"
+        }
+    ]
+}
