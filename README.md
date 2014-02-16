@@ -4,7 +4,16 @@ Why waste your time at *yet-another-middleman-website* to manage your errors. **
 
 Clustered errors, full context & stacktrace in your email notifications, wontfix, direct email replies to `@johnappleseed` works as intended. What's not to like?
 
-NOTE: integrations to `trello`, `pivotal tracker` or any other things should be added as a [provider](https://github.com/develsadvocates/runtimeerror.js/tree/master/lib/providers)
+
+## Compatible
+
+Runtimeerror.js can act as a compatible end point for the following plugins:
+
+* [Exceptional](https://github.com/develsadvocates/runtimeerror.js/blob/master/exceptional.md)
+* [Bugsnag](https://github.com/develsadvocates/runtimeerror.js/blob/master/bugsnag.md)
+* [Rollbar](https://github.com/develsadvocates/runtimeerror.js/blob/master/rollbar.md)
+
+Click through the links for configuration instructions.
 
 ## How a human manage errors
 
@@ -66,8 +75,9 @@ node web.js
 
 The web application is compatible with these popular error reporting tools
 
-* [bugsnag](https://github.com/develsadvocates/runtimeerror.js/blob/master/bugsnag.md)
-* [rollbar](https://github.com/develsadvocates/runtimeerror.js/blob/master/rollbar.md)
+* [Exceptional](https://github.com/develsadvocates/runtimeerror.js/blob/master/exceptional.md)
+* [Bugsnag](https://github.com/develsadvocates/runtimeerror.js/blob/master/bugsnag.md)
+* [Rollbar](https://github.com/develsadvocates/runtimeerror.js/blob/master/rollbar.md)
 * [runtimeerror_notifier gem](http://rubygems.org/gems/runtimeerror_notifier) (set the `email to` as described in `config via email address` section above)
 
 ### procmail.js
@@ -99,7 +109,12 @@ If you choose NOT to use a separate `bot` github account, runtimeerror.js can st
 
 ## Changelog
 
-* `0.2.0` Issue description now shows sparkline image, reflecting error trend of past 7 days
+* `0.2.2`
+ > Change "email format" to support "provider" as subdomain; enable email notification to authenticated user; add support for Exceptional
+* `0.2.1`
+ > Sparklines work with CRLF
+* `0.2.0`
+ > Issue description now shows sparkline image, reflecting error trend of past 7 days
 
 ## LICENSE
 
