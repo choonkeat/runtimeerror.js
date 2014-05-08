@@ -285,7 +285,7 @@ describe("runtimeerror", function() {
           spyOn(account.api, 'is_wontfix').andCallFake(function() { return true; });
           runtimeerror.handle(account, "titleA", "bodyB", noop);
           expect(account.find_issue_by_title).toHaveBeenCalled();
-          expect(account.update_issue)       .not.toHaveBeenCalled();
+          expect(account.update_issue)       .toHaveBeenCalled();
           expect(account.reopen_issue)       .not.toHaveBeenCalled();
         })
       });
@@ -320,7 +320,7 @@ describe("runtimeerror", function() {
           runtimeerror.handle(account, "titleA", "bodyB", noop);
           expect(account.find_issue_by_title).toHaveBeenCalled();
           expect(account.reopen_issue)       .not.toHaveBeenCalled();
-          expect(account.update_issue)       .not.toHaveBeenCalled();
+          expect(account.update_issue)       .toHaveBeenCalled();
         });
       });
 
