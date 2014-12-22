@@ -8,6 +8,7 @@ describe("github", function() {
       var bool = false;
       spyOn(provider.repo, "create_issue").andCallFake(function(attrs, callback) {
         expect(lodash.keys(attrs).toString()).toBe(['title', 'body', 'labels'].toString());
+        expect(typeof attrs['labels']).toBe('object');
         callback();
       });
       var callback = function() { bool = true; }
