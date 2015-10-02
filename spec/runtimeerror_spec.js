@@ -114,6 +114,12 @@ describe("runtimeerror", function() {
       var result = runtimeerror.extract_repo_secret_provider('"hello/world.js" <abc.def@smtp.random.com>');
       expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world.js', secret: 'abc.def', provider: 'smtp' }));
     });
+    it("should use swap out secret with ENV value if available", function() {
+      process.env['abc.def_SECRET'] = 'XYZ123';
+      var result = runtimeerror.extract_repo_secret_provider('"hello/world.js" <abc.def@smtp.random.com>');
+      expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world.js', secret: 'XYZ123', provider: 'smtp' }));
+      delete process.env['abc.def_SECRET'];
+    });
     it("should pluck label via user+label@host format", function() {
       var result = runtimeerror.extract_repo_secret_provider('"hello/world.js" <abc.def+mylabel123+456@smtp.random.com>');
       expect(JSON.stringify(result)).toBe(JSON.stringify({ repo: 'hello/world.js', secret: 'abc.def', label: 'mylabel123 456', provider: 'smtp' }));
