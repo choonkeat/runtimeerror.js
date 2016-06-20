@@ -14,10 +14,11 @@ describe("runtimeerror", function() {
   });
   describe("make_generic_title", function() {
     it("should change digits to {N}", function() {
-      expect(runtimeerror.make_generic_title("1,23-456abc7890.12 345")).toBe("{N},{N}-{N}abc{N} {N}");
+      expect(runtimeerror.make_generic_title("1,23-456abc7890.12 345")).toBe("{N},{N}-{HEX}.{N} {N}");
     });
     it("should change hexadecimals to {HEX}", function() {
       expect(runtimeerror.make_generic_title("1,23-0x1234567.12 345")).toBe("{N},{N}-{HEX}.{N} {N}");
+      expect(runtimeerror.make_generic_title("access_token=215046.933a290.9d09819574bb4e46cd648303&count=777")).toBe('access_token={N}.{HEX}.{HEX}&count={N}');
     });
     it("should remove email subject prefixes - fw:, fwd:, re:", function() {
       expect(runtimeerror.make_generic_title("fw: hello world there")).toBe("hello world there");
